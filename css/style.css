@@ -145,7 +145,50 @@ p{margin:0 0 16px;color:#516060;}
 }
 @media(max-width:900px){.float-book{display:inline-flex;}}
 
-/* ===== INNER PAGE HEADER ===== */
+/* ===== APP DOWNLOAD SECTION ===== */
+.app-download{background:var(--aqua-tint);}
+.app-download-grid{display:grid;grid-template-columns:1fr .8fr;gap:56px;align-items:center;}
+@media(max-width:900px){.app-download-grid{grid-template-columns:1fr;gap:36px;text-align:center;}}
+.app-icon-mock{
+  width:180px;height:180px;border-radius:42px;overflow:hidden;
+  box-shadow:0 24px 50px rgba(31,143,147,.28);
+  margin:0 auto;
+}
+.app-icon-mock img{width:100%;height:100%;object-fit:cover;}
+.app-features{display:flex;gap:22px;margin-top:20px;flex-wrap:wrap;}
+@media(max-width:900px){.app-features{justify-content:center;}}
+.app-features span{font-size:.82rem;color:var(--teal-deep);font-weight:600;display:inline-flex;align-items:center;gap:6px;}
+.ios-instructions{
+  background:var(--white);border-left:3px solid var(--teal);
+  padding:14px 18px;border-radius:8px;margin-top:18px;
+  font-size:.88rem;color:#516060;max-width:440px;
+  display:none;
+}
+@media(max-width:900px){.ios-instructions{margin-left:auto;margin-right:auto;}}
+.already-installed-note{
+  font-size:.85rem;color:var(--teal-deep);font-weight:600;margin-top:16px;display:none;
+}
+.install-banner{
+  display:none;
+  background:var(--teal-deep);color:var(--white);
+  padding:12px 20px;
+  align-items:center;justify-content:center;
+  gap:14px;flex-wrap:wrap;
+  font-size:.85rem;text-align:center;
+}
+.install-banner.show{display:flex;}
+.install-banner .install-btn{
+  background:var(--white);color:var(--teal-deep);
+  border:none;padding:8px 18px;border-radius:999px;
+  font-weight:600;font-size:.8rem;cursor:pointer;
+  font-family:var(--font-body);
+}
+.install-banner .install-dismiss{
+  background:none;border:none;color:var(--white);
+  font-size:1.05rem;cursor:pointer;padding:0 4px;
+  opacity:.8;line-height:1;
+}
+.install-banner .install-dismiss:hover{opacity:1;}
 .page-header{
   padding:64px 0 56px;
   background:linear-gradient(180deg,var(--aqua-tint) 0%,var(--white) 100%);
