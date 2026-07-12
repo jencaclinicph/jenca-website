@@ -19,7 +19,7 @@
 }
 
 *{box-sizing:border-box;}
-html{scroll-behavior:smooth;overflow-x:hidden;}
+html{scroll-behavior:smooth;overflow-x:hidden;touch-action:pan-y;}
 body{
   margin:0;
   font-family:var(--font-body);
@@ -30,6 +30,8 @@ body{
   overflow-x:hidden;
   width:100%;
   max-width:100vw;
+  touch-action:pan-y;
+  position:relative;
 }
 img{max-width:100%;display:block;}
 a{color:inherit;text-decoration:none;}
