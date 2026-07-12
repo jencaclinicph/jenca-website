@@ -168,27 +168,6 @@ p{margin:0 0 16px;color:#516060;}
 .already-installed-note{
   font-size:.85rem;color:var(--teal-deep);font-weight:600;margin-top:16px;display:none;
 }
-.install-banner{
-  display:none;
-  background:var(--teal-deep);color:var(--white);
-  padding:12px 20px;
-  align-items:center;justify-content:center;
-  gap:14px;flex-wrap:wrap;
-  font-size:.85rem;text-align:center;
-}
-.install-banner.show{display:flex;}
-.install-banner .install-btn{
-  background:var(--white);color:var(--teal-deep);
-  border:none;padding:8px 18px;border-radius:999px;
-  font-weight:600;font-size:.8rem;cursor:pointer;
-  font-family:var(--font-body);
-}
-.install-banner .install-dismiss{
-  background:none;border:none;color:var(--white);
-  font-size:1.05rem;cursor:pointer;padding:0 4px;
-  opacity:.8;line-height:1;
-}
-.install-banner .install-dismiss:hover{opacity:1;}
 .page-header{
   padding:64px 0 56px;
   background:linear-gradient(180deg,var(--aqua-tint) 0%,var(--white) 100%);
