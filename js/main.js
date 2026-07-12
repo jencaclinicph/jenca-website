@@ -70,6 +70,9 @@ if ('serviceWorker' in navigator) {
         deferredPrompt = null;
       } else if (isIOS) {
         iosInstructions.style.display = 'block';
+      } else {
+        iosInstructions.innerHTML = '<strong>To install:</strong> tap your browser menu (⋮) and select "Install app" or "Add to Home Screen". If you don\'t see this option, try browsing this site in Chrome directly (not inside Messenger/Facebook).';
+        iosInstructions.style.display = 'block';
       }
     });
   }
