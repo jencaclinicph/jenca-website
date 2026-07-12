@@ -22,24 +22,39 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Install app logic — powers the "Download the App" section on the homepage
+// App install modal — triggered from the "Get the App" footer link
 (function () {
+  const overlay = document.getElementById('appModalOverlay');
+  const closeBtn = document.getElementById('appModalClose');
+  const openLink = document.getElementById('openAppModalFooter');
   const downloadBtn = document.getElementById('downloadAppBtn');
   const iosInstructions = document.getElementById('iosInstructions');
   const alreadyInstalledNote = document.getElementById('alreadyInstalledNote');
-  if (!downloadBtn) return;
+  if (!overlay) return;
 
   const isStandalone =
     window.matchMedia('(display-mode: standalone)').matches ||
     window.navigator.standalone === true;
-
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
 
-  if (isStandalone) {
-    downloadBtn.style.display = 'none';
-    if (alreadyInstalledNote) alreadyInstalledNote.style.display = 'block';
-    return;
+  function openModal() {
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (isStandalone) {
+      downloadBtn.style.display = 'none';
+      alreadyInstalledNote.style.display = 'block';
+    }
   }
+  function closeModal() {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  if (openLink) openLink.addEventListener('click', openModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeModal();
+  });
 
   let deferredPrompt;
   window.addEventListener('beforeinstallprompt', (e) => {
@@ -47,18 +62,20 @@ if ('serviceWorker' in navigator) {
     deferredPrompt = e;
   });
 
-  downloadBtn.addEventListener('click', async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-      deferredPrompt = null;
-    } else if (isIOS) {
-      if (iosInstructions) iosInstructions.style.display = 'block';
-    }
-  });
+  if (downloadBtn) {
+    downloadBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+      } else if (isIOS) {
+        iosInstructions.style.display = 'block';
+      }
+    });
+  }
 
   window.addEventListener('appinstalled', () => {
     downloadBtn.style.display = 'none';
-    if (alreadyInstalledNote) alreadyInstalledNote.style.display = 'block';
+    alreadyInstalledNote.style.display = 'block';
   });
 })();

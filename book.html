@@ -7,7 +7,7 @@
 <meta name="description" content="Book your JENCA appointment. Choose your preferred service, branch, date, and time.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=2">
 
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
@@ -195,7 +195,7 @@
         <h4>Visit</h4>
         <a href="book.html">Book Appointment</a>
         <a href="contact.html">Contact</a>
-        <a href="index.html#get-app">Get the App</a>
+        <a href="javascript:void(0)" id="openAppModalFooter">Get the App</a>
       </div>
       <div>
         <h4>Legal</h4>
@@ -215,6 +215,29 @@
     </div>
   </div>
 </footer>
+
+
+<div class="app-modal-overlay" id="appModalOverlay">
+  <div class="app-modal">
+    <button class="app-modal-close" id="appModalClose" aria-label="Close">✕</button>
+    <div class="app-modal-icon"><img src="assets/icon-512.png" alt="JENCA app icon"></div>
+    <h3>Get the JENCA App</h3>
+    <p>I-install ang JENCA app sa iyong phone para sa mas mabilis na pag-book — isang tap lang, walang App Store kailangan.</p>
+    <button id="downloadAppBtn" class="btn btn-primary">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v13m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+      Download the App
+    </button>
+    <div class="ios-instructions" id="iosInstructions">
+      <strong>Sa iPhone:</strong> buksan sa Safari, tap ang Share icon, tapos piliin ang "Add to Home Screen".
+    </div>
+    <p class="already-installed-note" id="alreadyInstalledNote">✓ Naka-install na ang JENCA app sa device mo.</p>
+    <div class="app-modal-features">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="15" height="15"><path d="M13 2 L4 14h6l-1 8 9-12h-6l1-8Z"/></svg>Mabilis</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="15" height="15"><path d="M2 12a10 10 0 0 1 20 0"/><path d="M6 12a6 6 0 0 1 12 0"/><circle cx="12" cy="16" r="1.5"/></svg>Offline</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="15" height="15"><path d="M3 11l9-7 9 7M5 10v10h14V10"/></svg>Home Screen</span>
+    </div>
+  </div>
+</div>
 
 <script src="js/main.js"></script>
 </body>
