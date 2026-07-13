@@ -266,7 +266,17 @@
   const conflictSuggestionsEl = document.getElementById("jbConflictSuggestions");
   const conflictCloseBtn = document.getElementById("jbConflictClose");
 
-  function openConflictModal(message, suggestions) {
+  function formatTime12hr(timeStr) {
+    // Converts "HH:MM" (24-hour) into "h:MM AM/PM"
+    const [hStr, mStr] = timeStr.split(":");
+    let h = parseInt(hStr, 10);
+    const period = h >= 12 ? "PM" : "AM";
+    h = h % 12;
+    if (h === 0) h = 12;
+    return `${h}:${mStr} ${period}`;
+  }
+
+  function openConflictModal(message, suggestions, requestedTime) {
     conflictMessageEl.textContent = message;
     conflictSuggestionsEl.innerHTML = "";
 
@@ -284,7 +294,7 @@
         btn.type = "button";
         btn.className = "jb-suggestion-btn";
         btn.dataset.time = slot;
-        btn.textContent = slot;
+        btn.textContent = formatTime12hr(slot);
         row.appendChild(btn);
       });
       conflictSuggestionsEl.appendChild(row);
@@ -294,7 +304,7 @@
     if (otherBranches && otherBranches.length > 0) {
       const label = document.createElement("p");
       label.className = "jb-conflict-section-label";
-      label.textContent = "Or available at another branch, same time:";
+      label.textContent = `Or available at another branch at ${formatTime12hr(requestedTime)}:`;
       conflictSuggestionsEl.appendChild(label);
 
       const row = document.createElement("div");
@@ -304,10 +314,20 @@
         btn.type = "button";
         btn.className = "jb-suggestion-btn";
         btn.dataset.branch = b.branch;
+        btn.dataset.time = requestedTime;
         btn.textContent = b.branch;
         row.appendChild(btn);
       });
       conflictSuggestionsEl.appendChild(row);
+    }
+
+    if ((!sameBranch || !sameBranch.slots || sameBranch.slots.length === 0) &&
+        (!otherBranches || otherBranches.length === 0)) {
+      const noneMsg = document.createElement("p");
+      noneMsg.style.marginTop = "12px";
+      noneMsg.style.color = "#888";
+      noneMsg.textContent = "No other open slots found for that date — please try a different date or contact us directly.";
+      conflictSuggestionsEl.appendChild(noneMsg);
     }
 
     // Bind suggestion buttons
@@ -370,7 +390,7 @@
         form.reset();
       } else if (result.conflict) {
         // Slot is taken — show the popup with the message + suggestions
-        openConflictModal(result.message, result.suggestions);
+        openConflictModal(result.message, result.suggestions, payload.time);
       } else {
         messageBox.className = "jb-message error";
         messageBox.textContent = result.message;
