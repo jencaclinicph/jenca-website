@@ -111,6 +111,11 @@
   .jb-message { margin-top: 14px; padding: 12px; border-radius: 6px; display: none; }
   .jb-message.success { background: #e6f7e6; color: #1a6b1a; display: block; }
   .jb-message.error { background: #fbe6e6; color: #a12b2b; display: block; }
+  .jb-suggestion-btn {
+    padding: 6px 14px; border: 1px solid #a12b2b; background: #fff;
+    color: #a12b2b; border-radius: 20px; font-size: 14px; cursor: pointer;
+  }
+  .jb-suggestion-btn:hover { background: #a12b2b; color: #fff; }
 </style>
 
 <form class="jb-form" id="jencaBookingForm">
@@ -173,8 +178,8 @@
   </div>
 
   <div class="jb-field">
-    <label for="jb-message">Message or Special Request</label>
-    <textarea id="jb-message" rows="3"></textarea>
+    <label for="jb-notes">Message or Special Request</label>
+    <textarea id="jb-notes" rows="3"></textarea>
   </div>
 
   <div class="jb-checkbox">
@@ -208,12 +213,13 @@
       date: document.getElementById("jb-date").value,
       time: document.getElementById("jb-time").value,
       patientType: document.getElementById("jb-patient-type").value,
-      message: document.getElementById("jb-message").value
+      message: document.getElementById("jb-notes").value
     };
 
     submitBtn.disabled = true;
-     submitBtn.textContent = "Processing...";
+    submitBtn.textContent = "Processing...";
     messageBox.style.display = "none";
+    messageBox.innerHTML = "";
 
     try {
       const response = await fetch(SCRIPT_URL, {
@@ -228,6 +234,46 @@
         messageBox.className = "jb-message success";
         messageBox.textContent = result.message;
         form.reset();
+      } else if (result.conflict) {
+        // Taken na ang slot -- ipakita ang message + suggestions
+        messageBox.className = "jb-message error";
+
+        let html = `<p>${result.message}</p>`;
+
+        const sameBranch = result.suggestions && result.suggestions.sameBranch;
+        if (sameBranch && sameBranch.slots && sameBranch.slots.length > 0) {
+          html += `<p style="margin-top:10px;"><strong>Available na oras sa ${sameBranch.branch}:</strong></p>`;
+          html += `<div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;">`;
+          sameBranch.slots.forEach(slot => {
+            html += `<button type="button" class="jb-suggestion-btn" data-time="${slot}">${slot}</button>`;
+          });
+          html += `</div>`;
+        }
+
+        const otherBranches = result.suggestions && result.suggestions.otherBranches;
+        if (otherBranches && otherBranches.length > 0) {
+          html += `<p style="margin-top:10px;"><strong>O kaya, available sa ibang branch sa parehong oras:</strong></p>`;
+          html += `<div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;">`;
+          otherBranches.forEach(b => {
+            html += `<button type="button" class="jb-suggestion-btn" data-branch="${b.branch}">${b.branch}</button>`;
+          });
+          html += `</div>`;
+        }
+
+        messageBox.innerHTML = html;
+
+        // Bind click events sa suggestion buttons
+        messageBox.querySelectorAll(".jb-suggestion-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            if (btn.dataset.time) {
+              document.getElementById("jb-time").value = btn.dataset.time;
+            }
+            if (btn.dataset.branch) {
+              document.getElementById("jb-branch").value = btn.dataset.branch;
+            }
+            messageBox.style.display = "none";
+          });
+        });
       } else {
         messageBox.className = "jb-message error";
         messageBox.textContent = result.message;
