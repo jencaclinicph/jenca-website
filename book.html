@@ -116,6 +116,55 @@
     color: #a12b2b; border-radius: 20px; font-size: 14px; cursor: pointer;
   }
   .jb-suggestion-btn:hover { background: #a12b2b; color: #fff; }
+
+  /* ===== Conflict popup modal ===== */
+  .jb-conflict-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 20, 20, 0.55);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .jb-conflict-overlay.active { display: flex; }
+  .jb-conflict-modal {
+    background: #fff;
+    border-radius: 12px;
+    max-width: 440px;
+    width: 100%;
+    padding: 28px 24px 24px;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    animation: jb-pop-in .18s ease-out;
+  }
+  @keyframes jb-pop-in {
+    from { transform: scale(.96); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .jb-conflict-close {
+    position: absolute; top: 12px; right: 12px;
+    background: none; border: none; font-size: 18px;
+    cursor: pointer; color: #666; line-height: 1;
+    width: 28px; height: 28px;
+  }
+  .jb-conflict-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: #fbe6e6; color: #a12b2b;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin-bottom: 14px;
+  }
+  .jb-conflict-modal h3 {
+    margin: 0 0 8px; font-size: 19px; color: #1a1a1a;
+  }
+  .jb-conflict-modal p { margin: 0 0 4px; color: #444; font-size: 15px; }
+  .jb-conflict-section-label {
+    margin-top: 16px; font-weight: 600; font-size: 14px; color: #1a1a1a;
+  }
+  .jb-conflict-options {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;
+  }
 </style>
 
 <form class="jb-form" id="jencaBookingForm">
@@ -194,12 +243,97 @@
   <div class="jb-message" id="jb-message"></div>
 </form>
 
+<!-- ===== Conflict / double-booking popup ===== -->
+<div class="jb-conflict-overlay" id="jbConflictOverlay">
+  <div class="jb-conflict-modal">
+    <button class="jb-conflict-close" id="jbConflictClose" aria-label="Close">✕</button>
+    <div class="jb-conflict-icon">⚠</div>
+    <h3>Time Slot Unavailable</h3>
+    <p id="jbConflictMessage"></p>
+    <div id="jbConflictSuggestions"></div>
+  </div>
+</div>
+
 <script>
-  // PALITAN ITO ng actual Google Apps Script Web App URL mo
- const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby5VJabRqAQ1vlyzTecsKjMrxKRVTL0NHKlx7OXZY5iFuOFCjwYSYkk4K3VuE-Hfe9B/exec";
+  // REPLACE THIS with your actual Google Apps Script Web App URL
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby5VJabRqAQ1vlyzTecsKjMrxKRVTL0NHKlx7OXZY5iFuOFCjwYSYkk4K3VuE-Hfe9B/exec";
   const form = document.getElementById("jencaBookingForm");
   const submitBtn = document.getElementById("jb-submit-btn");
   const messageBox = document.getElementById("jb-message");
+
+  const conflictOverlay = document.getElementById("jbConflictOverlay");
+  const conflictMessageEl = document.getElementById("jbConflictMessage");
+  const conflictSuggestionsEl = document.getElementById("jbConflictSuggestions");
+  const conflictCloseBtn = document.getElementById("jbConflictClose");
+
+  function openConflictModal(message, suggestions) {
+    conflictMessageEl.textContent = message;
+    conflictSuggestionsEl.innerHTML = "";
+
+    const sameBranch = suggestions && suggestions.sameBranch;
+    if (sameBranch && sameBranch.slots && sameBranch.slots.length > 0) {
+      const label = document.createElement("p");
+      label.className = "jb-conflict-section-label";
+      label.textContent = `Available times at ${sameBranch.branch}:`;
+      conflictSuggestionsEl.appendChild(label);
+
+      const row = document.createElement("div");
+      row.className = "jb-conflict-options";
+      sameBranch.slots.forEach(slot => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "jb-suggestion-btn";
+        btn.dataset.time = slot;
+        btn.textContent = slot;
+        row.appendChild(btn);
+      });
+      conflictSuggestionsEl.appendChild(row);
+    }
+
+    const otherBranches = suggestions && suggestions.otherBranches;
+    if (otherBranches && otherBranches.length > 0) {
+      const label = document.createElement("p");
+      label.className = "jb-conflict-section-label";
+      label.textContent = "Or available at another branch, same time:";
+      conflictSuggestionsEl.appendChild(label);
+
+      const row = document.createElement("div");
+      row.className = "jb-conflict-options";
+      otherBranches.forEach(b => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "jb-suggestion-btn";
+        btn.dataset.branch = b.branch;
+        btn.textContent = b.branch;
+        row.appendChild(btn);
+      });
+      conflictSuggestionsEl.appendChild(row);
+    }
+
+    // Bind suggestion buttons
+    conflictSuggestionsEl.querySelectorAll(".jb-suggestion-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (btn.dataset.time) {
+          document.getElementById("jb-time").value = btn.dataset.time;
+        }
+        if (btn.dataset.branch) {
+          document.getElementById("jb-branch").value = btn.dataset.branch;
+        }
+        closeConflictModal();
+      });
+    });
+
+    conflictOverlay.classList.add("active");
+  }
+
+  function closeConflictModal() {
+    conflictOverlay.classList.remove("active");
+  }
+
+  conflictCloseBtn.addEventListener("click", closeConflictModal);
+  conflictOverlay.addEventListener("click", (e) => {
+    if (e.target === conflictOverlay) closeConflictModal();
+  });
 
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
@@ -224,7 +358,7 @@
     try {
       const response = await fetch(SCRIPT_URL, {
         method: "POST",
-        headers: { "Content-Type": "text/plain" }, // text/plain para maiwasan ang CORS preflight issue
+        headers: { "Content-Type": "text/plain" }, // text/plain to avoid CORS preflight issues
         body: JSON.stringify(payload)
       });
 
@@ -235,56 +369,15 @@
         messageBox.textContent = result.message;
         form.reset();
       } else if (result.conflict) {
-        // Taken na ang slot -- ipakita ang message + suggestions
-        messageBox.className = "jb-message error";
-
-        let html = `<p>${result.message}</p>`;
-
-        const sameBranch = result.suggestions && result.suggestions.sameBranch;
-        if (sameBranch && sameBranch.slots && sameBranch.slots.length > 0) {
-          html += `<p style="margin-top:10px;"><strong>Available na oras sa ${sameBranch.branch}:</strong></p>`;
-          html += `<div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;">`;
-          sameBranch.slots.forEach(slot => {
-            html += `<button type="button" class="jb-suggestion-btn" data-time="${slot}">${slot}</button>`;
-          });
-          html += `</div>`;
-        }
-
-        const otherBranches = result.suggestions && result.suggestions.otherBranches;
-        if (otherBranches && otherBranches.length > 0) {
-          html += `<p style="margin-top:10px;"><strong>O kaya, available sa ibang branch sa parehong oras:</strong></p>`;
-          html += `<div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;">`;
-          otherBranches.forEach(b => {
-            html += `<button type="button" class="jb-suggestion-btn" data-branch="${b.branch}">${b.branch}</button>`;
-          });
-          html += `</div>`;
-        }
-
-        messageBox.innerHTML = html;
-
-        // Bind click events sa suggestion buttons
-        messageBox.querySelectorAll(".jb-suggestion-btn").forEach(btn => {
-          btn.addEventListener("click", () => {
-            if (btn.dataset.time) {
-              document.getElementById("jb-time").value = btn.dataset.time;
-            }
-            if (btn.dataset.branch) {
-              document.getElementById("jb-branch").value = btn.dataset.branch;
-            }
-            submitBtn.disabled = true;
-submitBtn.textContent = "Processing...";
-messageBox.style.removeProperty("display");
-messageBox.className = "jb-message";
-messageBox.innerHTML = "";
-          });
-        });
+        // Slot is taken — show the popup with the message + suggestions
+        openConflictModal(result.message, result.suggestions);
       } else {
         messageBox.className = "jb-message error";
         messageBox.textContent = result.message;
       }
     } catch (err) {
       messageBox.className = "jb-message error";
-      messageBox.textContent = "May problema sa pag-book. Subukan ulit o tawagan kami diretso.";
+      messageBox.textContent = "There was a problem submitting your booking. Please try again or contact us directly.";
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = "Submit Appointment Request";
