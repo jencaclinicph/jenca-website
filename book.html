@@ -271,7 +271,11 @@
             if (btn.dataset.branch) {
               document.getElementById("jb-branch").value = btn.dataset.branch;
             }
-            messageBox.style.display = "none";
+            submitBtn.disabled = true;
+submitBtn.textContent = "Processing...";
+messageBox.style.removeProperty("display");
+messageBox.className = "jb-message";
+messageBox.innerHTML = "";
           });
         });
       } else {
