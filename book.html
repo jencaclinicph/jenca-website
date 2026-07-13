@@ -92,7 +92,155 @@
         <strong>Booking Policy:</strong> Appointments are subject to confirmation by the JENCA Patient Care Team. Patients are encouraged to arrive 10 to 15 minutes before their confirmed appointment. Please contact the clinic in advance for cancellations or rescheduling. Some treatments require consultation and assessment before the procedure.
       </div>
     </div>
+<style>
+  .jb-form { max-width: 520px; margin: 0 auto; font-family: inherit; }
+  .jb-field { margin-bottom: 16px; }
+  .jb-field label { display: block; margin-bottom: 6px; font-weight: 600; }
+  .jb-field input, .jb-field select, .jb-field textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid #ccc;
+    border-radius: 6px; font-size: 15px; box-sizing: border-box;
+    font-family: inherit;
+  }
+  .jb-checkbox { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 20px; }
+  .jb-checkbox input { width: auto; margin-top: 4px; }
+  .jb-submit {
+    width: 100%; padding: 12px; background: #1F8F93; color: #fff;
+    border: none; border-radius: 6px; font-size: 16px; cursor: pointer;
+  }
+  .jb-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+  .jb-message { margin-top: 14px; padding: 12px; border-radius: 6px; display: none; }
+  .jb-message.success { background: #e6f7e6; color: #1a6b1a; display: block; }
+  .jb-message.error { background: #fbe6e6; color: #a12b2b; display: block; }
+</style>
 
+<form class="jb-form" id="jencaBookingForm">
+  <div class="jb-field">
+    <label for="jb-name">Full Name</label>
+    <input type="text" id="jb-name" required>
+  </div>
+
+  <div class="jb-field">
+    <label for="jb-contact">Mobile Number</label>
+    <input type="tel" id="jb-contact" required>
+  </div>
+
+  <div class="jb-field">
+    <label for="jb-email">Email Address</label>
+    <input type="email" id="jb-email" required>
+  </div>
+
+  <div class="jb-field">
+    <label for="jb-branch">Preferred Branch</label>
+    <select id="jb-branch" required>
+      <option value="">Select branch</option>
+      <option value="Quezon City">Quezon City</option>
+      <option value="Monumento">Monumento</option>
+      <option value="Antipolo">Antipolo</option>
+    </select>
+  </div>
+
+  <div class="jb-field">
+    <label for="jb-service">Preferred Service</label>
+    <select id="jb-service" required>
+      <option value="">Select service</option>
+      <option value="Regenerative Care">Regenerative Care</option>
+      <option value="Medical Aesthetics">Medical Aesthetics</option>
+      <option value="Hair Restoration">Hair Restoration</option>
+      <option value="Dental Care">Dental Care</option>
+      <option value="Body and Wellness">Body and Wellness</option>
+      <option value="IV Wellness">IV Wellness</option>
+      <option value="General Consultation">General Consultation</option>
+    </select>
+  </div>
+
+  <div class="jb-field">
+    <label for="jb-date">Preferred Date</label>
+    <input type="date" id="jb-date" required>
+  </div>
+
+  <div class="jb-field">
+    <label for="jb-time">Preferred Time</label>
+    <input type="time" id="jb-time" required>
+  </div>
+
+  <div class="jb-field">
+    <label for="jb-patient-type">New Patient or Returning Patient</label>
+    <select id="jb-patient-type" required>
+      <option value="">Select one</option>
+      <option value="New Patient">New Patient</option>
+      <option value="Returning Patient">Returning Patient</option>
+    </select>
+  </div>
+
+  <div class="jb-field">
+    <label for="jb-message">Message or Special Request</label>
+    <textarea id="jb-message" rows="3"></textarea>
+  </div>
+
+  <div class="jb-checkbox">
+    <input type="checkbox" id="jb-consent" required>
+    <label for="jb-consent">I agree to the Privacy Policy and consent to JENCA contacting me regarding my appointment request.</label>
+  </div>
+
+  <button type="submit" class="jb-submit" id="jb-submit-btn">Submit Appointment Request</button>
+
+  <p style="font-size: 13px; color: #666; margin-top: 10px;">Appointment requests are subject to clinic confirmation.</p>
+
+  <div class="jb-message" id="jb-message"></div>
+</form>
+
+<script>
+  // PALITAN ITO ng actual Google Apps Script Web App URL mo
+ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby5VJabRqAQ1vlyzTecsKjMrxKRVTL0NHKlx7OXZY5iFuOFCjwYSYkk4K3VuE-Hfe9B/exec";
+  const form = document.getElementById("jencaBookingForm");
+  const submitBtn = document.getElementById("jb-submit-btn");
+  const messageBox = document.getElementById("jb-message");
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const payload = {
+      name: document.getElementById("jb-name").value,
+      contact: document.getElementById("jb-contact").value,
+      email: document.getElementById("jb-email").value,
+      branch: document.getElementById("jb-branch").value,
+      service: document.getElementById("jb-service").value,
+      date: document.getElementById("jb-date").value,
+      time: document.getElementById("jb-time").value,
+      patientType: document.getElementById("jb-patient-type").value,
+      message: document.getElementById("jb-message").value
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Nagpoproseso...";
+    messageBox.style.display = "none";
+
+    try {
+      const response = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" }, // text/plain para maiwasan ang CORS preflight issue
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        messageBox.className = "jb-message success";
+        messageBox.textContent = result.message;
+        form.reset();
+      } else {
+        messageBox.className = "jb-message error";
+        messageBox.textContent = result.message;
+      }
+    } catch (err) {
+      messageBox.className = "jb-message error";
+      messageBox.textContent = "May problema sa pag-book. Subukan ulit o tawagan kami diretso.";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit Appointment Request";
+    }
+  });
+</script>
     <div class="booking-form">
       <form action="https://formsubmit.co/jencaclinicph@gmail.com" method="POST">
 
