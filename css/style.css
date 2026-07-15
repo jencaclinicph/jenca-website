@@ -151,6 +151,31 @@ p{margin:0 0 16px;color:#516060;}
 }
 @media(max-width:900px){.float-book{display:inline-flex;}}
 
+/* Floating Share button */
+.float-share{
+  position:fixed;bottom:24px;right:24px;
+  z-index:99;
+  width:52px;height:52px;border-radius:50%;
+  background:var(--white);color:var(--teal-deep);
+  border:1px solid rgba(31,143,147,.25);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  box-shadow:0 10px 26px rgba(31,143,147,.28);
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.float-share:hover{transform:scale(1.07);box-shadow:0 14px 32px rgba(31,143,147,.35);}
+.float-share svg{width:22px;height:22px;}
+.float-share .share-toast{
+  position:absolute;bottom:64px;right:0;
+  background:var(--teal-deep);color:var(--white);
+  font-size:.78rem;font-weight:600;
+  padding:8px 14px;border-radius:8px;white-space:nowrap;
+  opacity:0;pointer-events:none;transform:translateY(6px);
+  transition:opacity .2s ease, transform .2s ease;
+}
+.float-share .share-toast.show{opacity:1;transform:translateY(0);}
+@media(max-width:900px){.float-share{bottom:88px;}}
+
 /* ===== APP INSTALL MODAL ===== */
 .app-modal-overlay{
   display:none;
