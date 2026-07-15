@@ -21,5 +21,28 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "Book Appointment",
+      "short_name": "Book",
+      "description": "Book a JENCA appointment",
+      "url": "./book.html",
+      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Contact Us",
+      "short_name": "Contact",
+      "description": "View branches, call, or message JENCA",
+      "url": "./contact.html",
+      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Message Us",
+      "short_name": "Message",
+      "description": "Chat with JENCA on Messenger",
+      "url": "https://m.me/61555177318298",
+      "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }]
+    }
   ]
 }
