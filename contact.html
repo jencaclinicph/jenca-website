@@ -249,6 +249,11 @@
 
 <a href="book.html" class="float-book">Book Now</a>
 
+<button type="button" class="float-share" id="shareBtn" aria-label="Share JENCA">
+  <span class="share-toast" id="shareToast">Link copied!</span>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-3.9M8.6 13.5l6.8 3.9"/></svg>
+</button>
+
 
 <div class="app-modal-overlay" id="appModalOverlay">
   <div class="app-modal">
@@ -273,5 +278,27 @@
 </div>
 
 <script src="js/main.js"></script>
+<script>
+(function(){
+  var btn = document.getElementById('shareBtn');
+  var toast = document.getElementById('shareToast');
+  if(!btn) return;
+  var shareData = {
+    title: 'JENCA Medical & Dental Aesthetic Clinic',
+    text: 'Personalized regenerative healthcare, medical aesthetics, dental care, and wellness — book your JENCA appointment today.',
+    url: 'https://jencaclinicph.github.io/jenca-website/contact.html'
+  };
+  btn.addEventListener('click', function(){
+    if(navigator.share){
+      navigator.share(shareData).catch(function(){});
+    } else if(navigator.clipboard){
+      navigator.clipboard.writeText(shareData.url).then(function(){
+        toast.classList.add('show');
+        setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+      });
+    }
+  });
+})();
+</script>
 </body>
 </html>
