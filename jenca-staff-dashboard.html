@@ -124,7 +124,9 @@
     font-size:16px;
     font-weight:600;
     margin:0;
+    cursor:pointer;
   }
+  .column-head h2:hover{ text-decoration:underline; color:var(--teal); }
   .count-badge{
     font-size:12px;
     font-weight:600;
@@ -144,10 +146,7 @@
     padding:2px 9px;
     font-family:'Space Grotesk',sans-serif;
     white-space:nowrap;
-    border:none;
-    cursor:pointer;
   }
-  .sales-badge:hover{ background:var(--teal); color:#fff; }
   .cards{ display:flex; flex-direction:column; gap:12px; }
   .card{
     background:var(--surface);
@@ -404,6 +403,50 @@
   .balance-due-list .bd-amt{ font-weight:700; color:var(--red); font-family:'Space Grotesk',sans-serif; }
   .balance-due-empty{ font-size:13px; color:var(--teal); font-weight:600; }
 
+  .itemized-section{ margin-top:20px; border-top:1px solid var(--hairline); padding-top:16px; }
+  .itemized-section h4{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 2px 0;
+  }
+  .itemized-subtitle{ font-size:11px; color:var(--ink-soft); margin:0 0 10px 0; }
+  .itemized-branch-group{ margin-bottom:10px; border:1px solid var(--hairline); border-radius:10px; overflow:hidden; }
+  .itemized-branch-group summary{
+    cursor:pointer;
+    padding:10px 12px;
+    font-weight:700;
+    font-size:13px;
+    background:var(--bg);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    list-style:none;
+  }
+  .itemized-branch-group summary::-webkit-details-marker{ display:none; }
+  .itemized-branch-group summary .itemized-count{ font-weight:600; color:var(--ink-soft); font-size:11px; }
+  .itemized-table{ width:100%; border-collapse:collapse; font-size:12px; }
+  .itemized-table th{
+    text-align:left;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    padding:6px 8px;
+    border-bottom:1px solid var(--hairline);
+    border-top:1px solid var(--hairline);
+  }
+  .itemized-table td{
+    padding:7px 8px;
+    border-bottom:1px solid var(--hairline);
+    font-variant-numeric:tabular-nums;
+  }
+  .itemized-table td.amt-cell{ font-weight:700; color:var(--teal); text-align:right; }
+  .itemized-empty{ padding:12px; font-size:12px; color:var(--ink-soft); text-align:center; }
+
   .empty-col{
     color:var(--ink-soft);
     font-size:13px;
@@ -551,9 +594,7 @@
 <div class="modal-backdrop" id="settingsModal">
   <div class="modal">
     <h3 id="settingsTitleText">Settings</h3>
-    <p id="settingsDescText">I-paste ang Web App URL mula sa Apps Script deployment. Isang beses mo lang itong gagawin per device.</p>
-    <span class="settings-label" id="webAppUrlLabelText">Web App URL</span>
-    <input type="url" id="webAppUrlInput" placeholder="https://script.google.com/macros/s/.../exec" />
+    <p id="settingsDescText">I-adjust ang mga alert at auto-refresh setting ng dashboard.</p>
     <span class="settings-label" id="thresholdLabel">"Ending soon" alert — babala kung ilang minuto na lang bago matapos</span>
     <div class="slider-row">
       <input type="range" id="thresholdSlider" min="5" max="60" step="5" value="15" />
@@ -715,14 +756,24 @@
 
     <div id="salesResultSection" style="display:none;">
       <div id="salesTableWrap"></div>
-      <div class="modal-row">
-        <button class="btn-cancel" id="salesExportCsvBtn">Export CSV</button>
-        <button class="btn-cancel" id="salesExportPdfBtn">Export PDF</button>
-      </div>
+      <div id="itemizedTxnWrap"></div>
       <div class="modal-row">
         <button class="btn-cancel" id="salesBack">Back</button>
         <button class="btn-cancel" id="salesClose2">Isara</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Daily Transactions modal (click a branch name — no PIN needed) -->
+<div class="modal-backdrop" id="dailyTxnModal">
+  <div class="modal modal-sales">
+    <h3 id="dailyTxnTitle">Daily Transactions</h3>
+    <span class="settings-label" id="dailyTxnDateLabel">Date</span>
+    <input type="date" id="dailyTxnDate" />
+    <div id="dailyTxnResultWrap"></div>
+    <div class="modal-row">
+      <button class="btn-cancel" id="dailyTxnClose">Isara</button>
     </div>
   </div>
 </div>
@@ -734,18 +785,11 @@ const BRANCH_ORDER = ["Quezon City", "Monumento", "Antipolo"];
 // per platform rules; falls back to in-memory only if window.storage
 // isn't available, e.g. when opened outside Claude).
 // ============================================================
-// I-PASTE DITO YUNG WEB APP URL MO (isang beses lang, bago
-// i-distribute ang file sa mga branch). Kapag naka-set na ito,
-// hindi na kailangan pang i-type ulit sa Settings kada bukas.
-// Halimbawa: 'https://script.google.com/macros/s/AKfycb.../exec'
-// ============================================================
-const DEFAULT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby5VJabRqAQ1vlyzTecsKjMrxKRVTL0NHKlx7OXZY5iFuOFCjwYSYkk4K3VuE-Hfe9B/exec';
 
 let memoryStore = {};
 function localFallback(key, fallback){ return memoryStore[key] || fallback; }
 
 const CONFIG = {
-  WEB_APP_URL: localFallback('jenca_webapp_url', DEFAULT_WEB_APP_URL),
   THRESHOLD_MIN: parseInt(localFallback('jenca_threshold', '15'), 10),
   POLL_SEC: parseInt(localFallback('jenca_poll', '20'), 10)
 };
@@ -761,7 +805,7 @@ const FIL_MONTHS = ['Enero','Pebrero','Marso','Abril','Mayo','Hunyo','Hulyo','Ag
 const STRINGS = {
   en: {
     settingsTitle: 'Settings',
-    settingsDesc: "Paste the Web App URL from your Apps Script deployment. You only need to do this once per device.",
+    settingsDesc: "Adjust the dashboard's alerts and auto-refresh interval.",
     thresholdLabel: '"Ending soon" alert — how many minutes before the end time',
     pollLabel: 'Auto-refresh interval',
     close: 'Close',
@@ -783,7 +827,6 @@ const STRINGS = {
     updated: 'Successfully updated.',
     genericError: 'Something went wrong, please try again.',
     unreachable: 'Could not reach the server. Please try again.',
-    noWebAppUrl: 'No Web App URL set yet. Open Settings (⚙) to paste it.',
     loadFailed: 'Could not load data from Apps Script.',
     fetchFailed: 'Could not fetch dashboard data. Check the Web App URL in Settings.',
     noAppointments: 'No appointments today.',
@@ -819,7 +862,6 @@ const STRINGS = {
     paidLabel: 'Paid',
     totalBillLabel: 'Total Bill',
     todayCollectedTooltip: 'Total collected today (Cash + Card, from the Transaction Log)',
-    branchSalesTooltip: 'Click to view this branch\u2019s sales report',
     cashNowLabel: 'Cash Received Now',
     cardNowLabel: 'Card Received Now',
     soFarLabel: 'So far',
@@ -848,14 +890,23 @@ const STRINGS = {
     changeGivenCol: 'Change Given',
     balanceDueListTitle: 'Patients with Balance Due',
     noBalanceDueMsg: 'No outstanding balance — fully collected.',
-    exportCsvBtn: 'Export CSV',
-    exportPdfBtn: 'Export PDF',
-    exportPopupBlocked: 'Pop-up was blocked. Please allow pop-ups for this site to export as PDF.',
-    reportGeneratedAt: 'Generated'
+    itemizedTitle: 'Itemized Transactions (Full Log)',
+    itemizedSubtitle: 'Every payment ever recorded, per branch — not limited to the period above.',
+    timestampCol: 'Date/Time',
+    patientCol: 'Patient',
+    serviceCol: 'Service',
+    methodCol: 'Method',
+    amountCol: 'Amount',
+    staffCol: 'Recorded By',
+    noTransactionsMsg: 'No transactions recorded yet.',
+    itemizedLoadFailed: 'Could not load the itemized transaction list.',
+    dailyTxnTitle: 'Daily Transactions',
+    dailyTxnDateLabel: 'Date',
+    dailyTxnLoading: 'Loading...'
   },
   tl: {
     settingsTitle: 'Mga Setting',
-    settingsDesc: 'I-paste ang Web App URL mula sa Apps Script deployment. Isang beses mo lang itong gagawin per device.',
+    settingsDesc: 'I-adjust ang mga alert at auto-refresh setting ng dashboard.',
     thresholdLabel: '"Ending soon" alert — babala kung ilang minuto na lang bago matapos',
     pollLabel: 'Auto-refresh interval',
     close: 'Isara',
@@ -877,7 +928,6 @@ const STRINGS = {
     updated: 'Successfully na-update.',
     genericError: 'May error, subukan ulit.',
     unreachable: 'Hindi ma-reach ang server. Subukan ulit.',
-    noWebAppUrl: 'Wala pang na-set na Web App URL. Buksan ang Settings (⚙) para i-paste ito.',
     loadFailed: 'Hindi ma-load ang datos mula sa Apps Script.',
     fetchFailed: 'Hindi ma-fetch ang dashboard data. Tingnan ang Web App URL sa Settings.',
     noAppointments: 'Walang appointment ngayong araw.',
@@ -913,7 +963,6 @@ const STRINGS = {
     paidLabel: 'Nabayaran',
     totalBillLabel: 'Total Bill',
     todayCollectedTooltip: 'Kabuuang na-collect ngayong araw (Cash + Card, mula sa Transaction Log)',
-    branchSalesTooltip: 'I-click para makita ang sales report ng branch na ito',
     cashNowLabel: 'Cash na Natanggap Ngayon',
     cardNowLabel: 'Card na Natanggap Ngayon',
     soFarLabel: 'Sa ngayon',
@@ -942,10 +991,19 @@ const STRINGS = {
     changeGivenCol: 'Sukling Ibinigay',
     balanceDueListTitle: 'Mga Pasyenteng May Balance',
     noBalanceDueMsg: 'Walang natitirang balance — kumpleto ang kolekta.',
-    exportCsvBtn: 'I-export bilang CSV',
-    exportPdfBtn: 'I-export bilang PDF',
-    exportPopupBlocked: 'Na-block ang pop-up. Payagan ang pop-ups sa site na ito para maka-export bilang PDF.',
-    reportGeneratedAt: 'Nabuo noong'
+    itemizedTitle: 'Detalyadong Transaksyon (Buong Log)',
+    itemizedSubtitle: 'Lahat ng bayad na na-record, per branch — hindi limitado sa period sa itaas.',
+    timestampCol: 'Petsa/Oras',
+    patientCol: 'Pasyente',
+    serviceCol: 'Serbisyo',
+    methodCol: 'Paraan',
+    amountCol: 'Halaga',
+    staffCol: 'Na-record ni',
+    noTransactionsMsg: 'Wala pang naka-record na transaksyon.',
+    itemizedLoadFailed: 'Hindi ma-load ang detalyadong listahan ng transaksyon.',
+    dailyTxnTitle: 'Transaksyon Ngayong Araw',
+    dailyTxnDateLabel: 'Petsa',
+    dailyTxnLoading: 'Naglo-load...'
   }
 };
 
@@ -1064,8 +1122,8 @@ function applyLanguage(){
   document.getElementById('salesCancel').textContent = t('close');
   document.getElementById('salesBack').textContent = t('salesBackBtn');
   document.getElementById('salesClose2').textContent = t('close');
-  document.getElementById('salesExportCsvBtn').textContent = t('exportCsvBtn');
-  document.getElementById('salesExportPdfBtn').textContent = t('exportPdfBtn');
+  document.getElementById('dailyTxnDateLabel').textContent = t('dailyTxnDateLabel');
+  document.getElementById('dailyTxnClose').textContent = t('close');
   document.getElementById('langEnBtn').classList.toggle('lang-active', currentLang === 'en');
   document.getElementById('langTlBtn').classList.toggle('lang-active', currentLang === 'tl');
   renderBoard();
@@ -1085,10 +1143,6 @@ async function loadSettings(){
     if (lang) currentLang = lang.value;
   }catch(e){}
   try{
-    const url = await window.storage.get('jenca_webapp_url', true);
-    if (url) CONFIG.WEB_APP_URL = url.value;
-  }catch(e){}
-  try{
     const th = await window.storage.get('jenca_threshold', false);
     if (th) CONFIG.THRESHOLD_MIN = parseInt(th.value, 10);
   }catch(e){}
@@ -1096,25 +1150,18 @@ async function loadSettings(){
     const pl = await window.storage.get('jenca_poll', false);
     if (pl) CONFIG.POLL_SEC = parseInt(pl.value, 10);
   }catch(e){}
-  document.getElementById('webAppUrlInput').value = CONFIG.WEB_APP_URL || '';
   document.getElementById('thresholdSlider').value = CONFIG.THRESHOLD_MIN;
   document.getElementById('thresholdVal').textContent = CONFIG.THRESHOLD_MIN + 'm';
   document.getElementById('pollSlider').value = CONFIG.POLL_SEC;
   document.getElementById('pollVal').textContent = CONFIG.POLL_SEC + 's';
-  if (!CONFIG.WEB_APP_URL){
-    document.getElementById('settingsModal').classList.add('open');
-  }
   applyLanguage();
 }
 
 async function saveSettings(){
-  const url = document.getElementById('webAppUrlInput').value.trim();
   const th = parseInt(document.getElementById('thresholdSlider').value, 10);
   const pl = parseInt(document.getElementById('pollSlider').value, 10);
-  CONFIG.WEB_APP_URL = url;
   CONFIG.THRESHOLD_MIN = th;
   CONFIG.POLL_SEC = pl;
-  try{ await window.storage.set('jenca_webapp_url', url, true); }catch(e){}
   try{ await window.storage.set('jenca_threshold', String(th), false); }catch(e){}
   try{ await window.storage.set('jenca_poll', String(pl), false); }catch(e){}
   document.getElementById('settingsModal').classList.remove('open');
@@ -1134,21 +1181,18 @@ function clearError(){
   document.getElementById('errorBanner').style.display = 'none';
 }
 
-async function fetchDashboard(){
-  if (!CONFIG.WEB_APP_URL){
-    showError(t('noWebAppUrl'));
-    return;
-  }
-  try{
-    const res = await fetch(CONFIG.WEB_APP_URL + '?action=dashboard');
-    const json = await res.json();
-    if (!json.success){ showError(t('loadFailed')); return; }
-    latestData = json;
-    clearError();
-    renderBoard();
-  }catch(err){
-    showError(t('fetchFailed'));
-  }
+function fetchDashboard(){
+  google.script.run
+    .withSuccessHandler(function(json){
+      if (!json || !json.success){ showError(t('loadFailed')); return; }
+      latestData = json;
+      clearError();
+      renderBoard();
+    })
+    .withFailureHandler(function(err){
+      showError(t('fetchFailed'));
+    })
+    .getDashboardData();
 }
 
 function restartPolling(){
@@ -1262,7 +1306,7 @@ function renderBoard(){
     const salesTotal = (latestData.todayCollected && typeof latestData.todayCollected[branch] === 'number')
       ? latestData.todayCollected[branch]
       : branchSalesToday(allEvents);
-    head.innerHTML = `<h2>${escapeHtml(branch)}</h2><div class="head-badges"><button class="sales-badge" data-branch="${escapeHtml(branch)}" title="${escapeHtml(t('branchSalesTooltip'))}">₱${salesTotal.toFixed(2)}</button><span class="count-badge">${activeEvents.length}</span></div>`;
+    head.innerHTML = `<h2 class="branch-name-btn" data-branch="${escapeHtml(branch)}">${escapeHtml(branch)}</h2><div class="head-badges"><span class="sales-badge" title="${escapeHtml(t('todayCollectedTooltip'))}">₱${salesTotal.toFixed(2)}</span><span class="count-badge">${activeEvents.length}</span></div>`;
     col.appendChild(head);
 
     const cardsWrap = document.createElement('div');
@@ -1395,10 +1439,9 @@ function renderBoard(){
       openAddPaymentModal(btn.dataset.branch, btn.dataset.event);
     });
   });
-  document.querySelectorAll('.sales-badge').forEach(btn=>{
-    btn.addEventListener('click', (e)=>{
-      e.stopPropagation();
-      openSalesModal(btn.dataset.branch);
+  document.querySelectorAll('.branch-name-btn').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      openDailyTxnModal(el.dataset.branch);
     });
   });
 }
@@ -1498,7 +1541,7 @@ function todayManilaDateStr(){
   return `${y}-${m}-${d}`;
 }
 
-async function submitWalkIn(){
+function submitWalkIn(){
   const msgEl = document.getElementById('walkInMsg');
   const branch = document.getElementById('walkInBranch').value;
   const service = document.getElementById('walkInService').value;
@@ -1517,39 +1560,36 @@ async function submitWalkIn(){
   msgEl.textContent = t('submitting');
   msgEl.className = 'modal-msg';
 
-  try{
-    const res = await fetch(CONFIG.WEB_APP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        type: 'walkIn',
-        branch, service, time,
-        date: todayManilaDateStr(),
-        name, contact, patientType, pin
-      })
+  google.script.run
+    .withSuccessHandler(function(json){
+      if (json.success){
+        msgEl.textContent = json.message || t('updated');
+        msgEl.className = 'modal-msg ok';
+        fetchDashboard();
+        setTimeout(()=>{
+          document.getElementById('walkInModal').classList.remove('open');
+        }, 400);
+      } else if (json.conflict){
+        const slots = (json.suggestions && json.suggestions.sameBranch && json.suggestions.sameBranch.slots) || [];
+        msgEl.textContent = slots.length
+          ? `${json.message} Suggested: ${slots.join(', ')}`
+          : json.message;
+        msgEl.className = 'modal-msg err';
+      } else {
+        msgEl.textContent = json.message || t('genericError');
+        msgEl.className = 'modal-msg err';
+      }
+    })
+    .withFailureHandler(function(err){
+      msgEl.textContent = t('unreachable');
+      msgEl.className = 'modal-msg err';
+    })
+    .apiWalkIn({
+      type: 'walkIn',
+      branch, service, time,
+      date: todayManilaDateStr(),
+      name, contact, patientType, pin
     });
-    const json = await res.json();
-    if (json.success){
-      msgEl.textContent = json.message || t('updated');
-      msgEl.className = 'modal-msg ok';
-      fetchDashboard();
-      setTimeout(()=>{
-        document.getElementById('walkInModal').classList.remove('open');
-      }, 400);
-    } else if (json.conflict){
-      const slots = (json.suggestions && json.suggestions.sameBranch && json.suggestions.sameBranch.slots) || [];
-      msgEl.textContent = slots.length
-        ? `${json.message} Suggested: ${slots.join(', ')}`
-        : json.message;
-      msgEl.className = 'modal-msg err';
-    } else {
-      msgEl.textContent = json.message || t('genericError');
-      msgEl.className = 'modal-msg err';
-    }
-  }catch(err){
-    msgEl.textContent = t('unreachable');
-    msgEl.className = 'modal-msg err';
-  }
 }
 
 function formatNow(now){
@@ -1669,7 +1709,7 @@ async function openAddPaymentModal(branch, eventId){
   updateBalanceDisplay();
 }
 
-async function toggleAddPaymentHistory(){
+function toggleAddPaymentHistory(){
   const panel = document.getElementById('paymentHistoryPanel');
   if (panel.style.display !== 'none'){
     panel.style.display = 'none';
@@ -1686,42 +1726,45 @@ async function toggleAddPaymentHistory(){
     emptyEl.style.display = '';
     return;
   }
-  try{
-    const res = await fetch(CONFIG.WEB_APP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ type:'transactionHistory', branch: pendingPayment.branch, eventId: pendingPayment.eventId, pin })
-    });
-    const json = await res.json();
-    if (!json.success){
-      emptyEl.textContent = json.message || t('genericError');
+  google.script.run
+    .withSuccessHandler(function(json){
+      handleHistoryResult(json);
+    })
+    .withFailureHandler(function(err){
+      emptyEl.textContent = t('unreachable');
       emptyEl.style.display = '';
-      return;
-    }
-    if (!json.rows || json.rows.length === 0){
-      emptyEl.textContent = 'No entries yet.';
-      emptyEl.style.display = '';
-      return;
-    }
-    listEl.innerHTML = json.rows.map(r => {
-      let label;
-      if (r.type === 'TOTAL') label = `Total set to ₱${r.amount.toFixed(2)}`;
-      else if (r.type === 'PAYMENT') label = `${r.method} +₱${r.amount.toFixed(2)}`;
-      else label = r.method; // ACTION rows: method field holds the action name (DONE/EXTEND/CANCEL/STAGE/...)
-      return `<li>
-        <span class="bd-who">
-          <span class="bd-patient">${escapeHtml(label)}</span>
-          <span class="bd-branch">${escapeHtml(r.recordedBy || '')} · ${escapeHtml(String(r.timestamp))}${r.notes ? ' · ' + escapeHtml(r.notes) : ''}</span>
-        </span>
-      </li>`;
-    }).join('');
-  }catch(err){
-    emptyEl.textContent = t('unreachable');
-    emptyEl.style.display = '';
-  }
+    })
+    .getTransactionHistorySecured({ type:'transactionHistory', branch: pendingPayment.branch, eventId: pendingPayment.eventId, pin });
 }
 
-async function submitAddPayment(){
+function handleHistoryResult(json){
+  const listEl = document.getElementById('paymentHistoryList');
+  const emptyEl = document.getElementById('paymentHistoryEmpty');
+  if (!json.success){
+    emptyEl.textContent = json.message || t('genericError');
+    emptyEl.style.display = '';
+    return;
+  }
+  if (!json.rows || json.rows.length === 0){
+    emptyEl.textContent = 'No entries yet.';
+    emptyEl.style.display = '';
+    return;
+  }
+  listEl.innerHTML = json.rows.map(r => {
+    let label;
+    if (r.type === 'TOTAL') label = `Total set to ₱${r.amount.toFixed(2)}`;
+    else if (r.type === 'PAYMENT') label = `${r.method} +₱${r.amount.toFixed(2)}`;
+    else label = r.method; // ACTION rows: method field holds the action name (DONE/EXTEND/CANCEL/STAGE/...)
+    return `<li>
+      <span class="bd-who">
+        <span class="bd-patient">${escapeHtml(label)}</span>
+        <span class="bd-branch">${escapeHtml(r.recordedBy || '')} · ${escapeHtml(String(r.timestamp))}${r.notes ? ' · ' + escapeHtml(r.notes) : ''}</span>
+      </span>
+    </li>`;
+  }).join('');
+}
+
+function submitAddPayment(){
   const msgEl = document.getElementById('paymentModalMsg');
   const totalRaw = document.getElementById('paymentTotal').value.trim();
   const cash = parseFloat(document.getElementById('paymentCash').value) || 0;
@@ -1751,35 +1794,29 @@ async function submitAddPayment(){
   };
   if (totalRaw) body.total = totalRaw;
 
-  try{
-    const res = await fetch(CONFIG.WEB_APP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(body)
-    });
-    const json = await res.json();
-    if (json.success){
-      msgEl.textContent = (json.message || t('updated')) + (json.recordedBy ? ` — ${json.recordedBy}` : '');
-      msgEl.className = 'modal-msg ok';
-      fetchDashboard();
-      setTimeout(()=>{
-        document.getElementById('paymentModal').classList.remove('open');
-      }, 400);
-    } else {
-      msgEl.textContent = json.message || t('genericError');
+  google.script.run
+    .withSuccessHandler(function(json){
+      if (json.success){
+        msgEl.textContent = (json.message || t('updated')) + (json.recordedBy ? ` — ${json.recordedBy}` : '');
+        msgEl.className = 'modal-msg ok';
+        fetchDashboard();
+        setTimeout(()=>{
+          document.getElementById('paymentModal').classList.remove('open');
+        }, 400);
+      } else {
+        msgEl.textContent = json.message || t('genericError');
+        msgEl.className = 'modal-msg err';
+      }
+    })
+    .withFailureHandler(function(err){
+      msgEl.textContent = t('unreachable');
       msgEl.className = 'modal-msg err';
-    }
-  }catch(err){
-    msgEl.textContent = t('unreachable');
-    msgEl.className = 'modal-msg err';
-  }
+    })
+    .doPaymentDetailsUpdate(body);
 }
 
-// ---- Sales Report modal (Manager PIN = consolidated all branches;
-// per-branch button = staff PIN, scoped sa sariling branch lang) ----
+// ---- Sales Report modal (Manager PIN-protected, consolidated per branch) ----
 let pendingSalesPeriod = 'day';
-let pendingSalesBranch = null;
-let lastSalesReportJson = null;
 
 function selectSalesPeriod(period){
   pendingSalesPeriod = period;
@@ -1789,14 +1826,7 @@ function selectSalesPeriod(period){
   document.getElementById('salesMonthField').style.display = period === 'month' ? '' : 'none';
 }
 
-function openSalesModal(branch){
-  pendingSalesBranch = branch || null;
-  document.getElementById('salesModalTitle').textContent = pendingSalesBranch
-    ? pendingSalesBranch + ' — ' + t('salesReportTitle')
-    : t('salesReportTitle');
-  document.getElementById('salesPinLabelText').textContent = pendingSalesBranch
-    ? t('staffPin')
-    : t('managerPin');
+function openSalesModal(){
   document.getElementById('salesInputSection').style.display = '';
   document.getElementById('salesResultSection').style.display = 'none';
   document.getElementById('salesDate').value = todayManilaDateStr();
@@ -1808,7 +1838,7 @@ function openSalesModal(branch){
   document.getElementById('salesModal').classList.add('open');
 }
 
-async function submitSalesReport(){
+function submitSalesReport(){
   const msgEl = document.getElementById('salesModalMsg');
   const pin = document.getElementById('salesPin').value.trim();
 
@@ -1819,7 +1849,6 @@ async function submitSalesReport(){
   }
 
   const body = { type: 'salesReport', pin };
-  if (pendingSalesBranch) body.branch = pendingSalesBranch;
   if (pendingSalesPeriod === 'month'){
     const month = document.getElementById('salesMonth').value;
     if (!month){
@@ -1835,26 +1864,86 @@ async function submitSalesReport(){
   msgEl.textContent = t('submitting');
   msgEl.className = 'modal-msg';
 
-  try{
-    const res = await fetch(CONFIG.WEB_APP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(body)
-    });
-    const json = await res.json();
-    if (json.success){
-      lastSalesReportJson = json;
-      renderSalesReport(json);
-      document.getElementById('salesInputSection').style.display = 'none';
-      document.getElementById('salesResultSection').style.display = '';
-    } else {
-      msgEl.textContent = json.message || t('genericError');
+  google.script.run
+    .withSuccessHandler(function(json){
+      if (json.success){
+        renderSalesReport(json);
+        document.getElementById('salesInputSection').style.display = 'none';
+        document.getElementById('salesResultSection').style.display = '';
+        loadItemizedTransactions(pin);
+      } else {
+        msgEl.textContent = json.message || t('genericError');
+        msgEl.className = 'modal-msg err';
+      }
+    })
+    .withFailureHandler(function(err){
+      msgEl.textContent = t('unreachable');
       msgEl.className = 'modal-msg err';
-    }
-  }catch(err){
-    msgEl.textContent = t('unreachable');
-    msgEl.className = 'modal-msg err';
-  }
+    })
+    .getSalesReportSecured(body);
+}
+
+// NEW: itemized, per-branch list of every PAYMENT ever recorded
+// (buong TransactionLog, hindi naka-limit sa day/month na napili sa
+// itaas). Ginagamit ang parehong Manager PIN na na-verify na sa
+// getSalesReportSecured kaya hindi na nag-re-reprompt.
+function loadItemizedTransactions(pin){
+  const wrap = document.getElementById('itemizedTxnWrap');
+  wrap.innerHTML = `<div class="itemized-section"><p class="itemized-empty">${escapeHtml(t('submitting'))}</p></div>`;
+
+  google.script.run
+    .withSuccessHandler(function(json){
+      if (json.success){
+        renderSalesTransactions(json.transactions || []);
+      } else {
+        wrap.innerHTML = `<div class="itemized-section"><p class="itemized-empty">${escapeHtml(json.message || t('itemizedLoadFailed'))}</p></div>`;
+      }
+    })
+    .withFailureHandler(function(err){
+      wrap.innerHTML = `<div class="itemized-section"><p class="itemized-empty">${escapeHtml(t('itemizedLoadFailed'))}</p></div>`;
+    })
+    .getSalesTransactionsSecured({ pin });
+}
+
+function renderSalesTransactions(transactions){
+  const wrap = document.getElementById('itemizedTxnWrap');
+
+  const groups = BRANCH_ORDER.map(branch => {
+    const items = transactions.filter(r => r.branch === branch);
+    const rowsHtml = items.length > 0
+      ? items.map(r => `<tr>
+          <td>${escapeHtml(String(r.timestamp))}</td>
+          <td>${escapeHtml(r.patient || '')}</td>
+          <td>${escapeHtml(r.service || '')}</td>
+          <td>${escapeHtml(r.method || '')}</td>
+          <td class="amt-cell">₱${Number(r.amount || 0).toFixed(2)}</td>
+          <td>${escapeHtml(r.recordedBy || '')}</td>
+        </tr>`).join('')
+      : `<tr><td colspan="6" class="itemized-empty">${escapeHtml(t('noTransactionsMsg'))}</td></tr>`;
+
+    return `<details class="itemized-branch-group">
+      <summary>${escapeHtml(branch)} <span class="itemized-count">${items.length}</span></summary>
+      <table class="itemized-table">
+        <thead>
+          <tr>
+            <th>${escapeHtml(t('timestampCol'))}</th>
+            <th>${escapeHtml(t('patientCol'))}</th>
+            <th>${escapeHtml(t('serviceCol'))}</th>
+            <th>${escapeHtml(t('methodCol'))}</th>
+            <th>${escapeHtml(t('amountCol'))}</th>
+            <th>${escapeHtml(t('staffCol'))}</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </details>`;
+  }).join('');
+
+  wrap.innerHTML = `<div class="itemized-section">
+    <h4>${escapeHtml(t('itemizedTitle'))}</h4>
+    <p class="itemized-subtitle">${escapeHtml(t('itemizedSubtitle'))}</p>
+    ${groups}
+  </div>`;
 }
 
 function formatSalesPeriodLabel(json){
@@ -1869,9 +1958,8 @@ function formatSalesPeriodLabel(json){
 function renderSalesReport(json){
   const wrap = document.getElementById('salesTableWrap');
   const g = json.grandTotal || { transactions:0, totalBilled:0, cashCollected:0, cardCollected:0, otherCollected:0, balanceDue:0, changeGiven:0 };
-  const branchesToShow = json.scopedToBranch ? [json.scopedToBranch] : BRANCH_ORDER;
 
-  const rows = branchesToShow.map(branch => {
+  const rows = BRANCH_ORDER.map(branch => {
     const r = (json.branches && json.branches[branch]) || { transactions:0, totalBilled:0, cashCollected:0, cardCollected:0, balanceDue:0, changeGiven:0 };
     return `<tr>
       <td>${escapeHtml(branch)}</td>
@@ -1919,7 +2007,7 @@ function renderSalesReport(json){
         </tr>
       </thead>
       <tbody>${rows}</tbody>
-      ${json.scopedToBranch ? '' : `<tfoot>
+      <tfoot>
         <tr>
           <td>${escapeHtml(t('grandTotalLabel'))}</td>
           <td>${g.transactions}</td>
@@ -1929,143 +2017,80 @@ function renderSalesReport(json){
           <td>₱${g.balanceDue.toFixed(2)}</td>
           <td>₱${g.changeGiven.toFixed(2)}</td>
         </tr>
-      </tfoot>`}
+      </tfoot>
     </table>
     ${otherNote}
     ${balanceDueSection}
   `;
 }
 
-// ---- Export: CSV (Blob download) and PDF (print-friendly popup) ----
-function csvEscapeCell(val){
-  const s = String(val === undefined || val === null ? '' : val);
-  if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
-  return s;
+// ---- Daily Transactions modal (click a branch name — walang PIN
+// kailangan, dahil sarili nilang branch lang naman ang nakikita nila
+// at parehas lang naman ito sa datos na nasa dashboard mismo) ----
+let pendingDailyTxnBranch = null;
+
+function openDailyTxnModal(branch){
+  pendingDailyTxnBranch = branch;
+  document.getElementById('dailyTxnTitle').textContent = branch + ' — ' + t('dailyTxnTitle');
+  document.getElementById('dailyTxnDate').value = todayManilaDateStr();
+  document.getElementById('dailyTxnModal').classList.add('open');
+  fetchDailyTransactions();
 }
 
-function downloadTextFile(content, filename, mime){
-  const blob = new Blob(['\uFEFF' + content], { type: mime });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
+async function fetchDailyTransactions(){
+  const wrap = document.getElementById('dailyTxnResultWrap');
+  const date = document.getElementById('dailyTxnDate').value || todayManilaDateStr();
+  wrap.innerHTML = `<p class="details-time">${escapeHtml(t('dailyTxnLoading'))}</p>`;
 
-function salesReportFilenameBase(json){
-  const scope = json.scopedToBranch ? json.scopedToBranch.replace(/\s+/g, '') + '_' : 'AllBranches_';
-  const period = json.period === 'month' ? (json.month || '') : (json.date || '');
-  return 'JENCA_SalesReport_' + scope + period;
-}
-
-function exportSalesReportCSV(json){
-  if (!json) return;
-  const g = json.grandTotal || { transactions:0, totalBilled:0, cashCollected:0, cardCollected:0, otherCollected:0, balanceDue:0, changeGiven:0 };
-  const branchesToShow = json.scopedToBranch ? [json.scopedToBranch] : BRANCH_ORDER;
-
-  const lines = [];
-  lines.push(csvEscapeCell('JENCA Medical & Dental Aesthetic Clinic — Sales Report'));
-  lines.push(csvEscapeCell((json.scopedToBranch ? json.scopedToBranch + ' — ' : 'All Branches — ') + formatSalesPeriodLabel(json)));
-  lines.push('');
-  lines.push(['Branch','Transactions','Total Billed','Cash Collected','Card Collected','Balance Due','Change Given'].map(csvEscapeCell).join(','));
-
-  branchesToShow.forEach(branch => {
-    const r = (json.branches && json.branches[branch]) || { transactions:0, totalBilled:0, cashCollected:0, cardCollected:0, balanceDue:0, changeGiven:0 };
-    lines.push([
-      branch, r.transactions, r.totalBilled.toFixed(2), r.cashCollected.toFixed(2),
-      r.cardCollected.toFixed(2), r.balanceDue.toFixed(2), r.changeGiven.toFixed(2)
-    ].map(csvEscapeCell).join(','));
-  });
-
-  if (!json.scopedToBranch){
-    lines.push([
-      'GRAND TOTAL', g.transactions, g.totalBilled.toFixed(2), g.cashCollected.toFixed(2),
-      g.cardCollected.toFixed(2), g.balanceDue.toFixed(2), g.changeGiven.toFixed(2)
-    ].map(csvEscapeCell).join(','));
-  }
-
-  if (g.otherCollected > 0){
-    lines.push('');
-    lines.push(csvEscapeCell('Unspecified payment method total: ₱' + g.otherCollected.toFixed(2)));
-  }
-
-  const balanceDueList = json.balanceDueList || [];
-  if (balanceDueList.length > 0){
-    lines.push('');
-    lines.push(csvEscapeCell('Patients with Balance Due'));
-    lines.push(['Patient','Branch','Service','Amount'].map(csvEscapeCell).join(','));
-    balanceDueList.forEach(item => {
-      lines.push([item.patient || '', item.branch || '', item.service || '', (item.amount || 0).toFixed(2)].map(csvEscapeCell).join(','));
+  try{
+    const res = await fetch(CONFIG.WEB_APP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ type: 'dailyTransactions', branch: pendingDailyTxnBranch, date })
     });
+    const json = await res.json();
+    if (json.success){
+      renderDailyTxnTable(json);
+    } else {
+      wrap.innerHTML = `<p class="itemized-empty">${escapeHtml(json.message || t('itemizedLoadFailed'))}</p>`;
+    }
+  }catch(err){
+    wrap.innerHTML = `<p class="itemized-empty">${escapeHtml(t('unreachable'))}</p>`;
   }
-
-  lines.push('');
-  lines.push(csvEscapeCell('Generated: ' + new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' })));
-
-  downloadTextFile(lines.join('\r\n'), salesReportFilenameBase(json) + '.csv', 'text/csv;charset=utf-8;');
 }
 
-function exportSalesReportPDF(json){
-  if (!json) return;
-  const g = json.grandTotal || { transactions:0, totalBilled:0, cashCollected:0, cardCollected:0, otherCollected:0, balanceDue:0, changeGiven:0 };
-  const branchesToShow = json.scopedToBranch ? [json.scopedToBranch] : BRANCH_ORDER;
+function renderDailyTxnTable(json){
+  const wrap = document.getElementById('dailyTxnResultWrap');
+  const items = json.transactions || [];
+  const rowsHtml = items.length > 0
+    ? items.map(r => `<tr>
+        <td>${escapeHtml(String(r.timestamp))}</td>
+        <td>${escapeHtml(r.patient || '')}</td>
+        <td>${escapeHtml(r.service || '')}</td>
+        <td>${escapeHtml(r.method || '')}</td>
+        <td class="amt-cell">₱${Number(r.amount || 0).toFixed(2)}</td>
+        <td>${escapeHtml(r.recordedBy || '')}</td>
+      </tr>`).join('')
+    : `<tr><td colspan="6" class="itemized-empty">${escapeHtml(t('noTransactionsMsg'))}</td></tr>`;
 
-  const rows = branchesToShow.map(branch => {
-    const r = (json.branches && json.branches[branch]) || { transactions:0, totalBilled:0, cashCollected:0, cardCollected:0, balanceDue:0, changeGiven:0 };
-    return `<tr><td>${escapeHtml(branch)}</td><td>${r.transactions}</td><td>₱${r.totalBilled.toFixed(2)}</td><td>₱${r.cashCollected.toFixed(2)}</td><td>₱${r.cardCollected.toFixed(2)}</td><td>₱${r.balanceDue.toFixed(2)}</td><td>₱${r.changeGiven.toFixed(2)}</td></tr>`;
-  }).join('');
+  const total = items.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
 
-  const grandRow = json.scopedToBranch ? '' : `<tr class="grand"><td>GRAND TOTAL</td><td>${g.transactions}</td><td>₱${g.totalBilled.toFixed(2)}</td><td>₱${g.cashCollected.toFixed(2)}</td><td>₱${g.cardCollected.toFixed(2)}</td><td>₱${g.balanceDue.toFixed(2)}</td><td>₱${g.changeGiven.toFixed(2)}</td></tr>`;
-
-  const balanceDueList = json.balanceDueList || [];
-  const bdRows = balanceDueList.map(item => `<tr><td>${escapeHtml(item.patient || '')}</td><td>${escapeHtml(item.branch || '')}</td><td>${escapeHtml(item.service || '')}</td><td>₱${(item.amount || 0).toFixed(2)}</td></tr>`).join('');
-  const bdSection = balanceDueList.length > 0
-    ? `<h3>Patients with Balance Due</h3><table><thead><tr><th>Patient</th><th>Branch</th><th>Service</th><th>Amount</th></tr></thead><tbody>${bdRows}</tbody></table>`
-    : '<p class="muted">No outstanding balance — fully collected.</p>';
-
-  const otherNote = g.otherCollected > 0
-    ? `<p class="muted">Unspecified payment method total: ₱${g.otherCollected.toFixed(2)}</p>`
-    : '';
-
-  const title = (json.scopedToBranch ? json.scopedToBranch + ' — ' : 'All Branches — ') + 'Sales Report — ' + formatSalesPeriodLabel(json);
-
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${escapeHtml(title)}</title>
-<style>
-  body{ font-family:'Segoe UI',Arial,sans-serif; color:#13322C; padding:28px; }
-  h1{ font-size:18px; margin:0 0 2px; }
-  h2{ font-size:13px; font-weight:500; color:#5B7168; margin:0 0 20px; }
-  h3{ font-size:14px; margin-top:28px; margin-bottom:8px; }
-  table{ width:100%; border-collapse:collapse; margin-bottom:16px; }
-  th,td{ border:1px solid #d7e2dd; padding:6px 10px; text-align:left; font-size:12px; }
-  th{ background:#1a3c34; color:#fff; }
-  tr.grand td{ font-weight:700; background:#EDF2EE; }
-  .muted{ font-size:12px; color:#5B7168; }
-  .printed-at{ font-size:11px; color:#5B7168; margin-top:24px; }
-  @media print{ body{ padding:0; } }
-</style></head><body>
-  <h1>JENCA Medical &amp; Dental Aesthetic Clinic</h1>
-  <h2>${escapeHtml(title)}</h2>
-  <table>
-    <thead><tr><th>Branch</th><th>Transactions</th><th>Billed</th><th>Cash</th><th>Card</th><th>Balance Due</th><th>Change Given</th></tr></thead>
-    <tbody>${rows}${grandRow}</tbody>
-  </table>
-  ${otherNote}
-  ${bdSection}
-  <p class="printed-at">Generated: ${new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' })}</p>
-</body></html>`;
-
-  const printWindow = window.open('', '_blank');
-  if (!printWindow){
-    alert(t('exportPopupBlocked'));
-    return;
-  }
-  printWindow.document.write(html);
-  printWindow.document.close();
-  printWindow.focus();
-  setTimeout(() => { printWindow.print(); }, 300);
+  wrap.innerHTML = `
+    <table class="itemized-table">
+      <thead>
+        <tr>
+          <th>${escapeHtml(t('timestampCol'))}</th>
+          <th>${escapeHtml(t('patientCol'))}</th>
+          <th>${escapeHtml(t('serviceCol'))}</th>
+          <th>${escapeHtml(t('methodCol'))}</th>
+          <th>${escapeHtml(t('amountCol'))}</th>
+          <th>${escapeHtml(t('staffCol'))}</th>
+        </tr>
+      </thead>
+      <tbody>${rowsHtml}</tbody>
+    </table>
+    <p class="payment-summary">${escapeHtml(t('totalLabel'))}: <span class="amt">₱${total.toFixed(2)}</span></p>
+  `;
 }
 
 function openCancelPinModal(branch, eventId){
@@ -2080,7 +2105,7 @@ function openCancelPinModal(branch, eventId){
   document.getElementById('pinInput').focus();
 }
 
-async function confirmPinAction(){
+function confirmPinAction(){
   const pin = document.getElementById('pinInput').value.trim();
   const msgEl = document.getElementById('pinModalMsg');
   if (!pin){
@@ -2091,23 +2116,7 @@ async function confirmPinAction(){
   msgEl.textContent = t('submitting');
   msgEl.className = 'modal-msg';
 
-  try{
-    let body;
-    if (pendingAction.kind === 'stage'){
-      body = { type: 'stage', branch: pendingAction.branch, eventId: pendingAction.eventId, stage: pendingAction.stage, pin: pin };
-    } else if (pendingAction.kind === 'payment'){
-      body = { type: 'payment', branch: pendingAction.branch, eventId: pendingAction.eventId, paymentStatus: pendingAction.paymentStatus, pin: pin };
-    } else if (pendingAction.kind === 'cancel'){
-      body = { type: 'cancel', branch: pendingAction.branch, eventId: pendingAction.eventId, pin: pin };
-    } else {
-      body = { type: 'staffAction', branch: pendingAction.branch, eventId: pendingAction.eventId, action: pendingAction.action, pin: pin };
-    }
-    const res = await fetch(CONFIG.WEB_APP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(body)
-    });
-    const json = await res.json();
+  function handlePinResult(json){
     if (json.success){
       msgEl.textContent = json.message || t('updated');
       msgEl.className = 'modal-msg ok';
@@ -2119,9 +2128,32 @@ async function confirmPinAction(){
       msgEl.textContent = json.message || t('genericError');
       msgEl.className = 'modal-msg err';
     }
-  }catch(err){
+  }
+  function handlePinFailure(err){
     msgEl.textContent = t('unreachable');
     msgEl.className = 'modal-msg err';
+  }
+
+  if (pendingAction.kind === 'stage'){
+    google.script.run
+      .withSuccessHandler(handlePinResult)
+      .withFailureHandler(handlePinFailure)
+      .doStageUpdate({ type: 'stage', branch: pendingAction.branch, eventId: pendingAction.eventId, stage: pendingAction.stage, pin: pin });
+  } else if (pendingAction.kind === 'payment'){
+    google.script.run
+      .withSuccessHandler(handlePinResult)
+      .withFailureHandler(handlePinFailure)
+      .doPaymentUpdate({ type: 'payment', branch: pendingAction.branch, eventId: pendingAction.eventId, paymentStatus: pendingAction.paymentStatus, pin: pin });
+  } else if (pendingAction.kind === 'cancel'){
+    google.script.run
+      .withSuccessHandler(handlePinResult)
+      .withFailureHandler(handlePinFailure)
+      .doCancelBooking({ type: 'cancel', branch: pendingAction.branch, eventId: pendingAction.eventId, pin: pin });
+  } else {
+    google.script.run
+      .withSuccessHandler(handlePinResult)
+      .withFailureHandler(handlePinFailure)
+      .doStaffAction({ type: 'staffAction', branch: pendingAction.branch, eventId: pendingAction.eventId, action: pendingAction.action, pin: pin });
   }
 }
 
@@ -2180,7 +2212,7 @@ document.getElementById('paymentPin').addEventListener('keydown', (e)=>{
   if (e.key === 'Enter') submitAddPayment();
 });
 
-document.getElementById('salesBtn').addEventListener('click', ()=> openSalesModal());
+document.getElementById('salesBtn').addEventListener('click', openSalesModal);
 document.getElementById('salesPeriodDayBtn').addEventListener('click', ()=> selectSalesPeriod('day'));
 document.getElementById('salesPeriodMonthBtn').addEventListener('click', ()=> selectSalesPeriod('month'));
 document.getElementById('salesCancel').addEventListener('click', ()=>{
@@ -2194,11 +2226,14 @@ document.getElementById('salesBack').addEventListener('click', ()=>{
   document.getElementById('salesResultSection').style.display = 'none';
 });
 document.getElementById('salesSubmit').addEventListener('click', submitSalesReport);
-document.getElementById('salesExportCsvBtn').addEventListener('click', ()=> exportSalesReportCSV(lastSalesReportJson));
-document.getElementById('salesExportPdfBtn').addEventListener('click', ()=> exportSalesReportPDF(lastSalesReportJson));
 document.getElementById('salesPin').addEventListener('keydown', (e)=>{
   if (e.key === 'Enter') submitSalesReport();
 });
+
+document.getElementById('dailyTxnClose').addEventListener('click', ()=>{
+  document.getElementById('dailyTxnModal').classList.remove('open');
+});
+document.getElementById('dailyTxnDate').addEventListener('change', fetchDailyTransactions);
 
 (async function init(){
   const now0 = new Date();
