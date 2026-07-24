@@ -687,7 +687,7 @@
     <p id="dailyModalDate" class="details-time"></p>
 
     <div id="dailyInputSection">
-      <span class="settings-label"><span id="dailyPinLabelText">Staff PIN</span> (<span id="dailyBranchLabel"></span>)</span>
+      <span class="settings-label" id="dailyPinLabelText">Manager PIN</span>
       <input type="password" id="dailyPinInput" maxlength="10" placeholder="••••" />
       <div class="modal-msg" id="dailyModalMsg"></div>
       <div class="modal-row">
@@ -1738,8 +1738,7 @@ function openDailyModal(branch){
   pendingDailyBranch = branch;
   document.getElementById('dailyModalTitle').textContent = `${branch} — ${t('dailyModalTitle')}`;
   document.getElementById('dailyModalDate').textContent = todayManilaDateStr();
-  document.getElementById('dailyBranchLabel').textContent = branch;
-  document.getElementById('dailyPinLabelText').textContent = t('staffPin');
+  document.getElementById('dailyPinLabelText').textContent = t('managerPin');
   document.getElementById('dailyPinInput').value = '';
   document.getElementById('dailyModalMsg').textContent = '';
   document.getElementById('dailyModalMsg').className = 'modal-msg';
