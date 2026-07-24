@@ -124,7 +124,9 @@
     font-size:16px;
     font-weight:600;
     margin:0;
+    cursor:pointer;
   }
+  .column-head h2:hover{ text-decoration:underline; }
   .count-badge{
     font-size:12px;
     font-weight:600;
@@ -678,6 +680,25 @@
   </div>
 </div>
 
+<!-- Daily Branch Transactions modal (no PIN — click a branch name) -->
+<div class="modal-backdrop" id="dailyModal">
+  <div class="modal modal-wide">
+    <h3 id="dailyModalTitle">Transactions</h3>
+    <p id="dailyModalDate" class="details-time"></p>
+    <div id="dailyModalBody">
+      <div class="details-time" id="dailyModalEmpty" style="display:none;">No transactions yet today.</div>
+      <ul class="balance-due-list" id="dailyModalList"></ul>
+      <div class="balance-box" id="dailyModalTotalBox" style="margin-top:12px;">
+        <span class="balance-label" id="dailyModalTotalLabel">Total collected</span>
+        <span class="balance-amt" id="dailyModalTotalAmt">₱0.00</span>
+      </div>
+    </div>
+    <div class="modal-row">
+      <button class="btn-cancel" id="dailyModalClose">Isara</button>
+    </div>
+  </div>
+</div>
+
 <!-- Sales Report modal (Manager PIN-protected, consolidated per branch) -->
 <div class="modal-backdrop" id="salesModal">
   <div class="modal modal-sales">
@@ -858,7 +879,10 @@ const STRINGS = {
     balanceDueCol: 'Balance Due',
     changeGivenCol: 'Change Given',
     balanceDueListTitle: 'Patients with Balance Due',
-    noBalanceDueMsg: 'No outstanding balance — fully collected.'
+    noBalanceDueMsg: 'No outstanding balance — fully collected.',
+    dailyModalTitle: 'Transactions',
+    dailyModalTotalLabel: 'Total collected',
+    dailyModalEmpty: 'No transactions yet today.'
   },
   tl: {
     settingsTitle: 'Mga Setting',
@@ -946,7 +970,10 @@ const STRINGS = {
     balanceDueCol: 'May Utang',
     changeGivenCol: 'Sukling Ibinigay',
     balanceDueListTitle: 'Mga Pasyenteng May Balance',
-    noBalanceDueMsg: 'Walang natitirang balance — kumpleto ang kolekta.'
+    noBalanceDueMsg: 'Walang natitirang balance — kumpleto ang kolekta.',
+    dailyModalTitle: 'Mga Transaksyon',
+    dailyModalTotalLabel: 'Kabuuang nakolekta',
+    dailyModalEmpty: 'Wala pang transaksyon ngayong araw.'
   }
 };
 
@@ -1229,7 +1256,7 @@ function renderBoard(){
     const salesTotal = (latestData.todayCollected && typeof latestData.todayCollected[branch] === 'number')
       ? latestData.todayCollected[branch]
       : branchSalesToday(allEvents);
-    head.innerHTML = `<h2>${escapeHtml(branch)}</h2><div class="head-badges"><span class="sales-badge" title="${escapeHtml(t('todayCollectedTooltip'))}">₱${salesTotal.toFixed(2)}</span><span class="count-badge">${activeEvents.length}</span></div>`;
+    head.innerHTML = `<h2 data-branch="${escapeHtml(branch)}" title="${escapeHtml(t('dailyModalTitle'))}">${escapeHtml(branch)}</h2><div class="head-badges"><span class="sales-badge" title="${escapeHtml(t('todayCollectedTooltip'))}">₱${salesTotal.toFixed(2)}</span><span class="count-badge">${activeEvents.length}</span></div>`;
     col.appendChild(head);
 
     const cardsWrap = document.createElement('div');
@@ -1357,6 +1384,11 @@ function renderBoard(){
     btn.addEventListener('click', (e)=>{
       e.stopPropagation();
       openAddPaymentModal(btn.dataset.branch, btn.dataset.event);
+    });
+  });
+  document.querySelectorAll('.column-head h2').forEach(h2=>{
+    h2.addEventListener('click', ()=>{
+      openDailyModal(h2.dataset.branch);
     });
   });
 }
@@ -1686,6 +1718,54 @@ async function submitAddPayment(){
   }
 }
 
+// ---- Daily Branch Transactions modal (no PIN — click a branch name) ----
+async function openDailyModal(branch){
+  document.getElementById('dailyModalTitle').textContent = `${branch} — ${t('dailyModalTitle')}`;
+  document.getElementById('dailyModalDate').textContent = todayManilaDateStr();
+  document.getElementById('dailyModalTotalLabel').textContent = t('dailyModalTotalLabel');
+  const listEl = document.getElementById('dailyModalList');
+  const emptyEl = document.getElementById('dailyModalEmpty');
+  const totalAmtEl = document.getElementById('dailyModalTotalAmt');
+  listEl.innerHTML = '';
+  emptyEl.style.display = 'none';
+  totalAmtEl.textContent = '…';
+  document.getElementById('dailyModal').classList.add('open');
+
+  try{
+    const json = await apiPost({ type: 'dailyTransactions', branch, date: todayManilaDateStr() });
+    if (!json.success){
+      emptyEl.textContent = json.message || t('genericError');
+      emptyEl.style.display = '';
+      totalAmtEl.textContent = '₱0.00';
+      return;
+    }
+    const rows = json.transactions || [];
+    if (rows.length === 0){
+      emptyEl.textContent = t('dailyModalEmpty');
+      emptyEl.style.display = '';
+      totalAmtEl.textContent = '₱0.00';
+      return;
+    }
+    let total = 0;
+    listEl.innerHTML = rows.map(r => {
+      total += r.amount || 0;
+      const timeLabel = String(r.timestamp).split(' ')[1] || String(r.timestamp);
+      return `<li>
+        <span class="bd-who">
+          <span class="bd-patient">${escapeHtml(r.patient || '')}${r.service ? ' · ' + escapeHtml(r.service) : ''}</span>
+          <span class="bd-branch">${escapeHtml(timeLabel)} · ${escapeHtml(r.method || '')}${r.recordedBy ? ' · ' + escapeHtml(r.recordedBy) : ''}</span>
+        </span>
+        <span class="bd-amt" style="color:var(--teal);">₱${(r.amount || 0).toFixed(2)}</span>
+      </li>`;
+    }).join('');
+    totalAmtEl.textContent = `₱${total.toFixed(2)}`;
+  }catch(err){
+    emptyEl.textContent = t('unreachable');
+    emptyEl.style.display = '';
+    totalAmtEl.textContent = '₱0.00';
+  }
+}
+
 let pendingSalesPeriod = 'day';
 
 function selectSalesPeriod(period){
@@ -1938,6 +2018,9 @@ document.getElementById('paymentPin').addEventListener('keydown', (e)=>{
   if (e.key === 'Enter') submitAddPayment();
 });
 
+document.getElementById('dailyModalClose').addEventListener('click', ()=>{
+  document.getElementById('dailyModal').classList.remove('open');
+});
 document.getElementById('salesBtn').addEventListener('click', openSalesModal);
 document.getElementById('salesPeriodDayBtn').addEventListener('click', ()=> selectSalesPeriod('day'));
 document.getElementById('salesPeriodMonthBtn').addEventListener('click', ()=> selectSalesPeriod('month'));
