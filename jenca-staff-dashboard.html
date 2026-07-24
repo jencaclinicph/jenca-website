@@ -680,21 +680,34 @@
   </div>
 </div>
 
-<!-- Daily Branch Transactions modal (no PIN — click a branch name) -->
+<!-- Daily Branch Transactions modal (staff PIN or manager PIN — click a branch name) -->
 <div class="modal-backdrop" id="dailyModal">
   <div class="modal modal-wide">
     <h3 id="dailyModalTitle">Transactions</h3>
     <p id="dailyModalDate" class="details-time"></p>
-    <div id="dailyModalBody">
-      <div class="details-time" id="dailyModalEmpty" style="display:none;">No transactions yet today.</div>
-      <ul class="balance-due-list" id="dailyModalList"></ul>
-      <div class="balance-box" id="dailyModalTotalBox" style="margin-top:12px;">
-        <span class="balance-label" id="dailyModalTotalLabel">Total collected</span>
-        <span class="balance-amt" id="dailyModalTotalAmt">₱0.00</span>
+
+    <div id="dailyInputSection">
+      <span class="settings-label"><span id="dailyPinLabelText">Staff PIN</span> (<span id="dailyBranchLabel"></span>)</span>
+      <input type="password" id="dailyPinInput" maxlength="10" placeholder="••••" />
+      <div class="modal-msg" id="dailyModalMsg"></div>
+      <div class="modal-row">
+        <button class="btn-cancel" id="dailyModalClose">Close</button>
+        <button class="btn-confirm" id="dailySubmit">View</button>
       </div>
     </div>
-    <div class="modal-row">
-      <button class="btn-cancel" id="dailyModalClose">Isara</button>
+
+    <div id="dailyResultSection" style="display:none;">
+      <div id="dailyModalBody">
+        <div class="details-time" id="dailyModalEmpty" style="display:none;">No transactions yet today.</div>
+        <ul class="balance-due-list" id="dailyModalList"></ul>
+        <div class="balance-box" id="dailyModalTotalBox" style="margin-top:12px;">
+          <span class="balance-label" id="dailyModalTotalLabel">Total collected</span>
+          <span class="balance-amt" id="dailyModalTotalAmt">₱0.00</span>
+        </div>
+      </div>
+      <div class="modal-row">
+        <button class="btn-cancel" id="dailyModalClose2">Close</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1718,10 +1731,35 @@ async function submitAddPayment(){
   }
 }
 
-// ---- Daily Branch Transactions modal (no PIN — click a branch name) ----
-async function openDailyModal(branch){
+// ---- Daily Branch Transactions modal (staff PIN or manager PIN — click a branch name) ----
+let pendingDailyBranch = null;
+
+function openDailyModal(branch){
+  pendingDailyBranch = branch;
   document.getElementById('dailyModalTitle').textContent = `${branch} — ${t('dailyModalTitle')}`;
   document.getElementById('dailyModalDate').textContent = todayManilaDateStr();
+  document.getElementById('dailyBranchLabel').textContent = branch;
+  document.getElementById('dailyPinLabelText').textContent = t('staffPin');
+  document.getElementById('dailyPinInput').value = '';
+  document.getElementById('dailyModalMsg').textContent = '';
+  document.getElementById('dailyModalMsg').className = 'modal-msg';
+  document.getElementById('dailyInputSection').style.display = '';
+  document.getElementById('dailyResultSection').style.display = 'none';
+  document.getElementById('dailyModal').classList.add('open');
+  document.getElementById('dailyPinInput').focus();
+}
+
+async function submitDailyModal(){
+  const msgEl = document.getElementById('dailyModalMsg');
+  const pin = document.getElementById('dailyPinInput').value.trim();
+  if (!pin){
+    msgEl.textContent = t('pinRequired');
+    msgEl.className = 'modal-msg err';
+    return;
+  }
+  msgEl.textContent = t('submitting');
+  msgEl.className = 'modal-msg';
+
   document.getElementById('dailyModalTotalLabel').textContent = t('dailyModalTotalLabel');
   const listEl = document.getElementById('dailyModalList');
   const emptyEl = document.getElementById('dailyModalEmpty');
@@ -1729,16 +1767,16 @@ async function openDailyModal(branch){
   listEl.innerHTML = '';
   emptyEl.style.display = 'none';
   totalAmtEl.textContent = '…';
-  document.getElementById('dailyModal').classList.add('open');
 
   try{
-    const json = await apiPost({ type: 'dailyTransactions', branch, date: todayManilaDateStr() });
+    const json = await apiPost({ type: 'dailyTransactions', branch: pendingDailyBranch, date: todayManilaDateStr(), pin });
     if (!json.success){
-      emptyEl.textContent = json.message || t('genericError');
-      emptyEl.style.display = '';
-      totalAmtEl.textContent = '₱0.00';
+      msgEl.textContent = json.message || t('genericError');
+      msgEl.className = 'modal-msg err';
       return;
     }
+    document.getElementById('dailyInputSection').style.display = 'none';
+    document.getElementById('dailyResultSection').style.display = '';
     const rows = json.transactions || [];
     if (rows.length === 0){
       emptyEl.textContent = t('dailyModalEmpty');
@@ -1760,9 +1798,8 @@ async function openDailyModal(branch){
     }).join('');
     totalAmtEl.textContent = `₱${total.toFixed(2)}`;
   }catch(err){
-    emptyEl.textContent = t('unreachable');
-    emptyEl.style.display = '';
-    totalAmtEl.textContent = '₱0.00';
+    msgEl.textContent = t('unreachable');
+    msgEl.className = 'modal-msg err';
   }
 }
 
@@ -2020,6 +2057,13 @@ document.getElementById('paymentPin').addEventListener('keydown', (e)=>{
 
 document.getElementById('dailyModalClose').addEventListener('click', ()=>{
   document.getElementById('dailyModal').classList.remove('open');
+});
+document.getElementById('dailyModalClose2').addEventListener('click', ()=>{
+  document.getElementById('dailyModal').classList.remove('open');
+});
+document.getElementById('dailySubmit').addEventListener('click', submitDailyModal);
+document.getElementById('dailyPinInput').addEventListener('keydown', (e)=>{
+  if (e.key === 'Enter') submitDailyModal();
 });
 document.getElementById('salesBtn').addEventListener('click', openSalesModal);
 document.getElementById('salesPeriodDayBtn').addEventListener('click', ()=> selectSalesPeriod('day'));
