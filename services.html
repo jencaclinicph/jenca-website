@@ -81,6 +81,19 @@
 .filter-pill:hover{border-color:var(--teal); color:var(--teal-deep);}
 .filter-pill.active{background:var(--teal-deep); border-color:var(--teal-deep); color:var(--white);}
 
+/* On narrow screens, wrap pills onto multiple lines instead of
+   horizontal-scrolling — nothing gets visually clipped at the edge. */
+@media(max-width:700px){
+  .filter-scroll{
+    flex-wrap:wrap; overflow-x:visible;
+    padding-right:0; scroll-snap-type:none;
+  }
+  .filter-pill{font-size:.78rem; padding:8px 14px;}
+  .menu-filter .wrap::before,
+  .menu-filter .wrap::after{ display:none; }
+  .menu-filter{position:static;}
+}
+
 .menu-section{padding:80px 0;}
 .menu-section:nth-of-type(even){background:var(--aqua-tint);}
 @media(max-width:768px){.menu-section{padding:56px 0;}}
