@@ -3,24 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Our Services | JENCA Medical &amp; Dental Aesthetic Clinic</title>
-<meta name="description" content="Regenerative care, medical aesthetics, hair restoration, dental care, and body &amp; wellness services at JENCA.">
+<title>Our Services &amp; Treatment Menu | JENCA Medical &amp; Dental Aesthetic Clinic</title>
+<meta name="description" content="Complete JENCA treatment menu with prices — facial aesthetics, face lifting &amp; contouring, injectables, regenerative medicine, hair restoration, intimate rejuvenation, dental care, and body &amp; wellness.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=3">
 
 <!-- Social link preview -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="Our Services | JENCA Medical &amp; Dental Aesthetic Clinic">
-<meta property="og:description" content="Regenerative care, medical aesthetics, hair restoration, dental care, and body &amp; wellness services at JENCA.">
+<meta property="og:title" content="Our Services &amp; Treatment Menu | JENCA Medical &amp; Dental Aesthetic Clinic">
+<meta property="og:description" content="Complete JENCA treatment menu with prices — facial aesthetics, lifting &amp; contouring, injectables, regenerative medicine, hair restoration, and more.">
 <meta property="og:image" content="https://jencaclinicph.github.io/jenca-website/assets/jenca-logo.jpg">
 <meta property="og:url" content="https://jencaclinicph.github.io/jenca-website/services.html">
 <meta property="og:site_name" content="JENCA Medical &amp; Dental Aesthetic Clinic">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Our Services | JENCA Medical &amp; Dental Aesthetic Clinic">
-<meta name="twitter:description" content="Regenerative care, medical aesthetics, hair restoration, dental care, and body &amp; wellness services at JENCA.">
+<meta name="twitter:title" content="Our Services &amp; Treatment Menu | JENCA Medical &amp; Dental Aesthetic Clinic">
+<meta name="twitter:description" content="Complete JENCA treatment menu with prices — facial aesthetics, lifting &amp; contouring, injectables, regenerative medicine, hair restoration, and more.">
 <meta name="twitter:image" content="https://jencaclinicph.github.io/jenca-website/assets/jenca-logo.jpg">
-
 
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
@@ -38,6 +37,149 @@
   gtag('js', new Date());
   gtag('config', 'G-XXXXXXXXXX');
 </script>
+
+<style>
+/* ===========================================================
+   TREATMENT MENU — page-specific styles (services.html)
+   Uses JENCA design tokens from css/style.css
+   =========================================================== */
+.menu-filter{
+  position:sticky; top:var(--nav-h); z-index:90;
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid #EAF3F3;
+  padding:14px 0;
+}
+@media(max-width:900px){ .menu-filter{backdrop-filter:none;background:var(--white);} }
+.menu-filter .wrap{padding:0 24px;}
+.filter-scroll{
+  display:flex; gap:10px; overflow-x:auto;
+  scrollbar-width:none; -ms-overflow-style:none;
+  padding-bottom:2px;
+}
+.filter-scroll::-webkit-scrollbar{display:none;}
+.filter-pill{
+  flex:none;
+  font-family:var(--font-body);
+  font-size:.82rem; font-weight:600; letter-spacing:.01em;
+  padding:9px 18px; border-radius:999px;
+  border:1.5px solid #DCEBEB; background:var(--white);
+  color:#516060; cursor:pointer; white-space:nowrap;
+  transition:all .2s ease;
+}
+.filter-pill:hover{border-color:var(--teal); color:var(--teal-deep);}
+.filter-pill.active{background:var(--teal-deep); border-color:var(--teal-deep); color:var(--white);}
+
+.menu-section{padding:80px 0;}
+.menu-section:nth-of-type(even){background:var(--aqua-tint);}
+@media(max-width:768px){.menu-section{padding:56px 0;}}
+.menu-section.is-hidden{display:none;}
+.menu-head{max-width:720px; margin:0 0 44px;}
+.menu-head p{font-size:1rem;}
+
+.tx-sub{
+  font-family:var(--font-body);
+  font-size:.78rem; letter-spacing:.14em; text-transform:uppercase;
+  font-weight:700; color:var(--gold);
+  margin:48px 0 22px;
+  display:flex; align-items:center; gap:14px;
+}
+.tx-sub::after{content:''; flex:1; height:1px; background:linear-gradient(90deg,#E2D4B8,transparent);}
+.tx-sub:first-of-type{margin-top:0;}
+
+.tx-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+@media(max-width:1000px){.tx-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:660px){.tx-grid{grid-template-columns:1fr;}}
+
+.tx-card{
+  background:var(--white);
+  border:1px solid #E7F3F3;
+  border-radius:var(--radius);
+  padding:28px 24px 24px;
+  display:flex; flex-direction:column;
+  transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  position:relative; overflow:hidden;
+}
+.menu-section:nth-of-type(even) .tx-card{border-color:#DEEEEE;}
+.tx-card::before{
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,var(--teal),var(--aqua));
+  opacity:0; transition:opacity .25s ease;
+}
+.tx-card:hover{transform:translateY(-4px); box-shadow:0 16px 40px rgba(31,143,147,.12); border-color:#CFE6E6;}
+.tx-card:hover::before{opacity:1;}
+
+.tx-name{font-size:1.06rem; line-height:1.3; margin:0 0 6px;}
+.tx-tag{
+  font-size:.76rem; font-weight:600; letter-spacing:.04em;
+  color:var(--teal-deep); text-transform:none;
+  margin:0 0 14px; line-height:1.5;
+}
+.tx-desc{font-size:.88rem; margin:0 0 16px; color:#516060;}
+
+.tx-best-label{
+  font-size:.7rem; letter-spacing:.12em; text-transform:uppercase;
+  font-weight:700; color:#8a9797; margin:0 0 9px;
+}
+.tx-best{display:flex; flex-wrap:wrap; gap:6px; margin:0 0 20px; flex:1; align-content:flex-start;}
+.tx-best li{
+  font-size:.75rem; font-weight:500; color:#3f5252;
+  background:var(--aqua-tint);
+  border:1px solid #DFF0F0;
+  padding:4px 11px; border-radius:999px;
+  line-height:1.4;
+}
+.menu-section:nth-of-type(even) .tx-best li{background:#EAF7F7;}
+
+.tx-foot{
+  border-top:1px solid #EEF5F5;
+  padding-top:16px; margin-top:auto;
+  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+}
+.tx-price{
+  font-family:var(--font-display); font-weight:600;
+  font-size:1rem; color:var(--charcoal); line-height:1.3;
+}
+.tx-price small{display:block; font-family:var(--font-body); font-size:.72rem; font-weight:500; color:#8a9797; letter-spacing:.02em;}
+.tx-book{
+  flex:none;
+  font-size:.78rem; font-weight:600; color:var(--teal-deep);
+  border:1.5px solid var(--teal-deep); border-radius:999px;
+  padding:8px 16px; transition:all .2s ease; white-space:nowrap;
+}
+.tx-book:hover{background:var(--teal-deep); color:var(--white);}
+
+.consult-note{
+  margin-top:40px;
+  background:var(--white);
+  border-left:3px solid var(--gold);
+  border-radius:10px;
+  padding:24px 26px;
+  box-shadow:0 6px 20px rgba(47,58,58,.05);
+}
+.menu-section:nth-of-type(odd) .consult-note{background:var(--aqua-tint);}
+.consult-note h3{font-size:1.05rem; margin:0 0 8px;}
+.consult-note p{font-size:.9rem; margin:0;}
+.consult-note .fee{
+  display:inline-block; margin-top:12px;
+  font-size:.82rem; font-weight:600; color:var(--teal-deep);
+  background:rgba(31,143,147,.08); padding:7px 14px; border-radius:999px;
+}
+.menu-section:nth-of-type(odd) .consult-note .fee{background:rgba(31,143,147,.10);}
+
+.price-disclaimer{
+  background:var(--aqua-tint);
+  border:1px dashed #CFE6E6;
+  border-radius:12px;
+  padding:20px 24px;
+  font-size:.84rem; color:#516060;
+  margin-top:28px;
+}
+.price-disclaimer strong{color:var(--charcoal);}
+.no-results{
+  text-align:center; padding:60px 0; color:#8a9797; font-size:.95rem; display:none;
+}
+</style>
 </head>
 <body>
 
@@ -61,8 +203,6 @@
   </div>
 </nav>
 
-
-
 <!-- ===== PAGE HEADER ===== -->
 <header class="page-header">
       <svg class="watermark-petal" viewBox="0 0 200 200" fill="currentColor" aria-hidden="true">
@@ -76,111 +216,889 @@
   <div class="wrap">
     <p class="eyebrow">Our Services</p>
     <h1>Care Across Every Stage of Your Journey</h1>
+    <p>Explore the complete JENCA treatment menu &mdash; medical aesthetics, regenerative medicine, hair restoration, dental care, and wellness, all delivered by licensed medical professionals.</p>
   </div>
 </header>
 
-<!-- ===== SERVICE DETAIL SECTIONS ===== -->
-<section id="regenerative" class="why">
-  <div class="wrap why-grid">
-    <div>
-      <p class="eyebrow">01 — Regenerative Care</p>
-      <h2>Regenerative Care</h2>
-      <p>Personalized regenerative treatments that work with your body's own healing processes.</p>
-      <div class="why-list">
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>PRP Skin Rejuvenation</h3></div></div>
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>PRP Hair Restoration</h3></div></div>
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>Exosome-Based Treatments</h3></div></div>
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>Rejuran</h3></div></div>
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>Personalized Regenerative Care</h3></div></div>
-      </div>
-      <a href="book.html" class="btn btn-outline" style="margin-top:24px;">Book This Service</a>
+
+<!-- ===== CATEGORY FILTER ===== -->
+<div class="menu-filter">
+  <div class="wrap">
+    <div class="filter-scroll" role="tablist" aria-label="Treatment categories">
+      <button class="filter-pill active" data-cat="all">All Treatments</button>
+      <button class="filter-pill" data-cat="facial">Facial Aesthetics</button>
+      <button class="filter-pill" data-cat="lifting">Lifting &amp; Contouring</button>
+      <button class="filter-pill" data-cat="injectables">Injectables</button>
+      <button class="filter-pill" data-cat="regenerative">Regenerative Care</button>
+      <button class="filter-pill" data-cat="hair">Hair Restoration</button>
+      <button class="filter-pill" data-cat="intimate">Intimate Rejuvenation</button>
+      <button class="filter-pill" data-cat="dental">Dental Care</button>
+      <button class="filter-pill" data-cat="wellness">Body &amp; Wellness</button>
     </div>
-    <div class="why-img">
-      <img src="assets/service-regenerative.jpg" alt="Regenerative care treatment at JENCA" onerror="this.src='https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=800&auto=format&fit=crop'">
+  </div>
+</div>
+
+
+<!-- ===== TREATMENT MENU ===== -->
+
+<section id="facial" class="menu-section">
+  <div class="wrap">
+    <div class="menu-head">
+      <p class="eyebrow">01 &mdash; Facial Aesthetics</p>
+      <h2>Facial Aesthetics</h2>
+      <p>Medical-grade facials and laser treatments designed to cleanse, renew, and restore your natural glow.</p>
+    </div>
+    <div class="tx-grid">
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA AquaGlow&trade; Facial</h3>
+        <p class="tx-tag">Deep Cleansing &bull; Hydration &bull; Radiance</p>
+        <p class="tx-desc">A medical-grade hydrating facial that deeply cleanses, exfoliates, removes impurities, and infuses nourishing serums for healthy, glowing skin.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Dull skin</li><li>Dry skin</li><li>Enlarged pores</li><li>Uneven texture</li><li>Regular skin maintenance</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;1,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Carbon Clear&trade;</h3>
+        <p class="tx-tag">Pore Refining &bull; Oil Control &bull; Skin Brightening</p>
+        <p class="tx-desc">A laser facial that helps reduce excess oil, minimize pores, improve acne-prone skin, and brighten the complexion.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Oily skin</li><li>Acne-prone skin</li><li>Enlarged pores</li><li>Uneven skin tone</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;1,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Acne Clear Reset&trade;</h3>
+        <p class="tx-tag">Clearer Skin &bull; Reduced Breakouts &bull; Healthier Complexion</p>
+        <p class="tx-desc">A medical acne facial designed to reduce active acne, calm inflammation, and improve overall skin health.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Acne</li><li>Blackheads</li><li>Whiteheads</li><li>Congested skin</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;1,999 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Crystal Polish&trade;</h3>
+        <p class="tx-tag">Gentle Exfoliation &bull; Smooth Skin &bull; Instant Glow</p>
+        <p class="tx-desc">A non-invasive exfoliating facial that removes dead skin cells for smoother, softer, and brighter skin.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Rough skin</li><li>Mild pigmentation</li><li>Uneven texture</li><li>First-time facial clients</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;999 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Signature Glow&trade; Facial</h3>
+        <p class="tx-tag">Refresh &bull; Brighten &bull; Maintain</p>
+        <p class="tx-desc">Our signature maintenance facial that instantly refreshes tired skin and restores a healthy glow.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Monthly skin maintenance</li><li>Dull complexion</li><li>Everyday glow</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;999 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Deep Purify&trade; Facial</h3>
+        <p class="tx-tag">Medical Cleansing &bull; Extraction &bull; Skin Detox</p>
+        <p class="tx-desc">A deep cleansing treatment that removes impurities while helping prevent future breakouts.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Oily skin</li><li>Congested pores</li><li>Blackheads</li><li>Teen and adult acne</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;1,299 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Glass Radiance&trade; Facial</h3>
+        <p class="tx-tag">Hydration &bull; Luminosity &bull; Skin Barrier Repair</p>
+        <p class="tx-desc">An intensive hydrating facial that promotes the coveted glass skin appearance through advanced skin nourishment.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Dehydrated skin</li><li>Dull complexion</li><li>Fine lines</li><li>Sensitive skin</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;2,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Skin Renew Peel&trade;</h3>
+        <p class="tx-tag">Renew &bull; Brighten &bull; Smooth</p>
+        <p class="tx-desc">A customized chemical peel that gently resurfaces the skin to improve acne, pigmentation, and fine lines.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Acne marks</li><li>Hyperpigmentation</li><li>Fine wrinkles</li><li>Uneven skin tone</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;2,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Skin Revive&trade; Laser</h3>
+        <p class="tx-tag">Collagen Stimulation &bull; Rejuvenation &bull; Firming</p>
+        <p class="tx-desc">A non-invasive laser treatment that stimulates collagen production and restores healthier-looking skin.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Fine lines</li><li>Sun damage</li><li>Enlarged pores</li><li>Uneven texture</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;2,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA LED Recovery&trade;</h3>
+        <p class="tx-tag">Healing &bull; Calming &bull; Skin Repair</p>
+        <p class="tx-desc">Medical-grade LED light therapy that helps reduce inflammation, accelerate healing, and stimulate collagen production.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Acne</li><li>Redness</li><li>Sensitive skin</li><li>Post-procedure recovery</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;800 / session &nbsp;&middot;&nbsp; Add-on: &#8369;500</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Oxygen Infusion&trade;</h3>
+        <p class="tx-tag">Hydration &bull; Revitalization &bull; Instant Freshness</p>
+        <p class="tx-desc">An oxygen-infused facial that replenishes moisture while leaving the skin refreshed, plump, and radiant.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Dry skin</li><li>Tired-looking skin</li><li>Special occasions</li><li>Sensitive skin</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;2,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Luxe Glow&trade; Facial</h3>
+        <p class="tx-tag">Luxury Facial Experience &bull; Personalized Care</p>
+        <p class="tx-desc">A fully customized premium facial that combines multiple advanced technologies based on your skin&rsquo;s needs for optimal rejuvenation.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Mature skin</li><li>Special events</li><li>Overall skin rejuvenation</li><li>Comprehensive facial care</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;3,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+    </div>
+    <div class="consult-note">
+      <h3>Facial Consultation</h3>
+      <p>Every facial treatment at JENCA Medical and Dental Aesthetic Clinic begins with a professional skin assessment to ensure the most appropriate treatment plan for your skin type and concerns.</p>
+      <span class="fee">Consultation Fee: &#8369;500 &mdash; waived when you proceed with a treatment.</span>
     </div>
   </div>
 </section>
 
-<section id="aesthetics" class="services">
-  <div class="wrap why-grid">
-    <div class="why-img">
-      <img src="assets/service-aesthetics.jpg" alt="Medical aesthetics treatment at JENCA" onerror="this.src='https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?q=80&w=800&auto=format&fit=crop'">
+<section id="lifting" class="menu-section">
+  <div class="wrap">
+    <div class="menu-head">
+      <p class="eyebrow">02 &mdash; Lifting &amp; Contouring</p>
+      <h2>Face Lifting &amp; Contouring</h2>
+      <p>Non-Surgical Lift &bull; Sculpt &bull; Define &mdash; restore youthful facial contours without surgery using advanced energy-based technologies and injectable treatments.</p>
     </div>
-    <div>
-      <p class="eyebrow">02 — Medical Aesthetics</p>
-      <h2>Medical Aesthetics</h2>
-      <p>Advanced, physician-guided procedures for healthier, more radiant skin.</p>
-      <div class="why-list">
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>Skin Rejuvenation</h3></div></div>
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>HIFU &amp; Facial Contouring</h3></div></div>
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>Wrinkle Treatments</h3></div></div>
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>Acne Care &amp; Scar Management</h3></div></div>
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>Pigmentation Care &amp; Laser Treatments</h3></div></div>
-      </div>
-      <a href="book.html" class="btn btn-outline" style="margin-top:24px;">Book This Service</a>
+    <div class="tx-grid">
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA UltraLift MPT&trade;</h3>
+        <p class="tx-tag">Advanced HIFU Face Lifting</p>
+        <p class="tx-desc">A non-surgical lifting treatment that uses micro-focused ultrasound to tighten skin, stimulate collagen, and redefine facial contours.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Sagging cheeks</li><li>Jawline definition</li><li>Double chin</li><li>Neck tightening</li><li>Brow lifting</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;18,000 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA ExiLift RF&trade;</h3>
+        <p class="tx-tag">Radiofrequency Skin Tightening</p>
+        <p class="tx-desc">Uses radiofrequency technology to tighten skin, stimulate collagen, and improve facial firmness with no downtime.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Mild skin laxity</li><li>Fine lines</li><li>Jawline contouring</li><li>Neck tightening</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;3,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA V-Lift Contour&trade;</h3>
+        <p class="tx-tag">PDO Thread Lift</p>
+        <p class="tx-desc">A minimally invasive procedure that instantly lifts sagging tissues while stimulating long-term collagen production.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Jowls</li><li>Mid-face lift</li><li>Jawline definition</li><li>Neck lift</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;35,000</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Fox Eye Lift&trade;</h3>
+        <p class="tx-tag">PDO Fox Eye Threads</p>
+        <p class="tx-desc">Creates a lifted, elongated eye appearance while improving skin firmness around the temples.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Droopy brows</li><li>Tired-looking eyes</li><li>Almond eye enhancement</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;2,999 / thread</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Jawline Sculpt&trade;</h3>
+        <p class="tx-tag">Jawline Enhancement</p>
+        <p class="tx-desc">Enhances facial definition using dermal fillers, collagen stimulators, or lifting technologies based on your facial assessment.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Weak jawline</li><li>Facial asymmetry</li><li>Loss of facial definition</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;18,000</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Chin Define&trade;</h3>
+        <p class="tx-tag">Chin Contouring</p>
+        <p class="tx-desc">Improves facial harmony by enhancing chin projection and contour.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Receding chin</li><li>Facial balance</li><li>Side profile enhancement</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;18,000</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA HIKO Nose Define&trade;</h3>
+        <p class="tx-tag">Non-Surgical Nose Enhancement</p>
+        <p class="tx-desc">Enhances the bridge and tip of the nose using PDO threads for a refined profile.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Low nasal bridge</li><li>Nose tip definition</li><li>Straighter nose profile</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;14,999</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA NeckLift Renew&trade;</h3>
+        <p class="tx-tag">Neck Tightening</p>
+        <p class="tx-desc">Targets loose skin and horizontal neck lines using advanced lifting technologies.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Neck laxity</li><li>Turkey neck</li><li>Neck wrinkles</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;8,000 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Double Chin Sculpt&trade;</h3>
+        <p class="tx-tag">Submental Fat Reduction</p>
+        <p class="tx-desc">A combination treatment designed to reduce fullness under the chin while improving jawline definition. Options may include Lemon Bottle, Aqualyx, UltraLift MPT, or ExiLift RF.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Double chin</li><li>Jawline definition</li><li>Submental fullness</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;6,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Full Face Rejuvenation&trade;</h3>
+        <p class="tx-tag">Personalized Lift &amp; Contour Program</p>
+        <p class="tx-desc">A customized combination of lifting devices, regenerative injectables, and contouring treatments tailored to your facial anatomy and aesthetic goals.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Overall facial rejuvenation</li><li>Multiple concerns</li><li>Long-term planning</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Treatment plan</small>Customized</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+    </div>
+    <div class="consult-note">
+      <h3>Consultation</h3>
+      <p>Every lifting and contouring procedure begins with a comprehensive facial assessment. Our medical professionals evaluate your facial structure, skin quality, and goals to create a personalized treatment plan.</p>
     </div>
   </div>
 </section>
 
-<section id="hair" class="why">
-  <div class="wrap why-grid">
-    <div>
-      <p class="eyebrow">03 — Hair Restoration</p>
+<section id="injectables" class="menu-section">
+  <div class="wrap">
+    <div class="menu-head">
+      <p class="eyebrow">03 &mdash; Injectables</p>
+      <h2>Injectables</h2>
+      <p>Enhance &bull; Restore &bull; Refine &mdash; treatments designed to soften wrinkles, restore facial volume, enhance natural features, and reduce localized fat, all performed by trained medical professionals using premium products.</p>
+    </div>
+    <div class="tx-grid">
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Wrinkle Relax&trade;</h3>
+        <p class="tx-tag">Botulinum Toxin Treatment</p>
+        <p class="tx-desc">Smooth expression lines while preserving natural facial movement for a refreshed and youthful appearance.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Forehead lines</li><li>Frown lines (11 lines)</li><li>Crow&rsquo;s feet</li><li>Bunny lines</li><li>Chin dimpling</li><li>Pebble chin</li><li>Lip flip</li><li>Gummy smile</li><li>Jaw slimming (Masseter)</li><li>Neck bands (Nefertiti Lift)</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;250 / unit</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Dermal Contour&trade;</h3>
+        <p class="tx-tag">Dermal Fillers</p>
+        <p class="tx-desc">Restore lost facial volume and enhance facial contours for balanced, natural-looking results.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Cheek enhancement</li><li>Chin augmentation</li><li>Jawline contouring</li><li>Temple restoration</li><li>Nasolabial folds</li><li>Marionette lines</li><li>Facial balancing</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;18,000 / syringe</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA LipLuxe&trade;</h3>
+        <p class="tx-tag">Lip Enhancement</p>
+        <p class="tx-desc">Enhance lip volume, shape, hydration, and definition while maintaining a soft, natural appearance.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Thin lips</li><li>Uneven lip shape</li><li>Lip hydration</li><li>Lip definition</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;18,000</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA UnderEye Restore&trade;</h3>
+        <p class="tx-tag">Tear Trough Filler</p>
+        <p class="tx-desc">Refresh tired-looking eyes by restoring volume beneath the eyes for a brighter, more youthful appearance.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Hollow under-eyes</li><li>Dark circles from volume loss</li><li>Tired appearance</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;18,000</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Liquid Lift&trade;</h3>
+        <p class="tx-tag">Full Face Rejuvenation</p>
+        <p class="tx-desc">A customized combination of botulinum toxin and dermal fillers designed to create a naturally refreshed and youthful appearance.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Facial aging</li><li>Volume loss</li><li>Facial balancing</li><li>Non-surgical rejuvenation</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Treatment plan</small>Customized</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+    </div>
+    <h3 class="tx-sub">Fat Dissolving Injectables</h3>
+    <div class="tx-grid">
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Lemon Sculpt&trade;</h3>
+        <p class="tx-tag">Lemon Bottle Fat Dissolving</p>
+        <p class="tx-desc">A non-surgical injectable treatment that helps reduce localized fat while enhancing facial and body contours.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Double chin</li><li>Jawline</li><li>Arms</li><li>Abdomen</li><li>Flanks</li><li>Inner thighs</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;6,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Aqualyx Sculpt&trade;</h3>
+        <p class="tx-tag">Aqualyx Fat Dissolving</p>
+        <p class="tx-desc">Medical fat-dissolving injections designed for stubborn fat deposits that are resistant to diet and exercise.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Double chin</li><li>Abdomen</li><li>Love handles</li><li>Back fat</li><li>Arms</li><li>Thighs</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;18,000 / vial</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA LipoContour&trade;</h3>
+        <p class="tx-tag">Mesolipo</p>
+        <p class="tx-desc">Body contouring injections that target localized fat while supporting smoother body contours.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Abdomen</li><li>Arms</li><li>Waist</li><li>Thighs</li><li>Back fat</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;3,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+    </div>
+    <h3 class="tx-sub">Sweat Reduction</h3>
+    <div class="tx-grid">
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA SweatFree&trade;</h3>
+        <p class="tx-tag">Hyperhidrosis Treatment</p>
+        <p class="tx-desc">A botulinum toxin treatment that helps reduce excessive sweating for long-lasting dryness and confidence.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Underarms</li><li>Palms</li><li>Soles of the feet</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;9,999</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+    </div>
+    <h3 class="tx-sub">Facial &amp; Body Slimming</h3>
+    <div class="tx-grid">
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA V-Shape&trade;</h3>
+        <p class="tx-tag">Masseter Reduction</p>
+        <p class="tx-desc">Slim and soften the lower face by relaxing enlarged jaw muscles for a more refined V-shaped appearance.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Square jaw</li><li>Teeth grinding (Bruxism)</li><li>Jaw tension</li><li>Facial slimming</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;12,000</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Barbie Shoulder&trade;</h3>
+        <p class="tx-tag">Trapezius Relaxation</p>
+        <p class="tx-desc">Relax the trapezius muscles to create a longer-looking neck and a more elegant shoulder contour.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Bulky trapezius muscles</li><li>Shoulder tension</li><li>Neck contouring</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;18,000</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Calf Contour&trade;</h3>
+        <p class="tx-tag">Calf Slimming</p>
+        <p class="tx-desc">Reduce the appearance of bulky calf muscles for a slimmer, more proportionate lower leg.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Prominent calf muscles</li><li>Leg contouring</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;18,000</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+    </div>
+    <div class="consult-note">
+      <h3>Professional Consultation</h3>
+      <p>Every injectable treatment begins with a comprehensive medical consultation and facial assessment. Our experienced medical professionals create a personalized treatment plan based on your facial anatomy, aesthetic goals, and safety considerations to achieve natural-looking, balanced results.</p>
+    </div>
+  </div>
+</section>
+
+<section id="regenerative" class="menu-section">
+  <div class="wrap">
+    <div class="menu-head">
+      <p class="eyebrow">04 &mdash; Regenerative Care</p>
+      <h2>Regenerative Medicine</h2>
+      <p>Personalized regenerative treatments that work with your body&rsquo;s own healing processes to repair, renew, and restore.</p>
+    </div>
+    <div class="tx-grid">
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA PRP Skin Renewal&trade;</h3>
+        <p class="tx-tag">Natural Collagen Stimulation</p>
+        <p class="tx-desc">Harnesses your body&rsquo;s own platelets to improve skin texture, firmness, and overall skin health.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Skin rejuvenation</li><li>Fine lines</li><li>Acne scars</li><li>Skin repair</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;5,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA PRP LuxeFusion&trade;</h3>
+        <p class="tx-tag">Advanced Regenerative Skin Therapy</p>
+        <p class="tx-desc">An enhanced PRP protocol combined with advanced regenerative techniques for maximum skin renewal.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Aging skin</li><li>Dull complexion</li><li>Collagen loss</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;8,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA PRF Elite&trade;</h3>
+        <p class="tx-tag">Next-Generation Platelet Therapy</p>
+        <p class="tx-desc">Platelet-Rich Fibrin delivers a slow release of growth factors for longer-lasting regenerative effects.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Facial rejuvenation</li><li>Under-eye rejuvenation</li><li>Hair restoration</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;8,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Exosome Regenerate&trade;</h3>
+        <p class="tx-tag">Cellular Skin Repair</p>
+        <p class="tx-desc">Advanced exosome therapy designed to accelerate healing and improve skin quality.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Skin rejuvenation</li><li>Acne scars</li><li>Anti-aging</li><li>Hair restoration</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;14,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Rejuran Restore&trade;</h3>
+        <p class="tx-tag">Polynucleotide Skin Healing</p>
+        <p class="tx-desc">A regenerative injectable that repairs damaged skin while improving elasticity and hydration.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Fine lines</li><li>Thin skin</li><li>Acne scars</li><li>Under-eye rejuvenation</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;25,000 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Plinest Collagen Restore&trade;</h3>
+        <p class="tx-tag">Collagen Biostimulation</p>
+        <p class="tx-desc">Stimulates natural collagen production for firmer, healthier-looking skin.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Skin laxity</li><li>Wrinkles</li><li>Neck rejuvenation</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;18,000 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Juvelook Renew&trade;</h3>
+        <p class="tx-tag">Collagen Regeneration</p>
+        <p class="tx-desc">A hybrid collagen stimulator that improves skin quality while gradually restoring volume.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Acne scars</li><li>Fine lines</li><li>Skin texture</li><li>Collagen loss</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;28,000 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Skin Boost Infusion&trade;</h3>
+        <p class="tx-tag">Deep Skin Hydration</p>
+        <p class="tx-desc">Microinjections of hyaluronic acid and skin nutrients to restore hydration and glow.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Dry skin</li><li>Fine lines</li><li>Dull complexion</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;8,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="hair" class="menu-section">
+  <div class="wrap">
+    <div class="menu-head">
+      <p class="eyebrow">05 &mdash; Hair Restoration</p>
       <h2>Hair Restoration</h2>
-      <p>Science-backed programs designed to restore hair health and confidence.</p>
-      <div class="why-list">
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>PRP Hair Therapy</h3></div></div>
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>Exosome-Based Hair Programs</h3></div></div>
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>Personalized Hair Restoration Plans</h3></div></div>
-      </div>
-      <a href="book.html" class="btn btn-outline" style="margin-top:24px;">Book This Service</a>
+      <p>Restore &bull; Strengthen &bull; Regrow &mdash; healthy hair begins with a healthy scalp. Advanced regenerative hair restoration designed to reduce hair loss, stimulate natural growth, and improve scalp health for both men and women.</p>
     </div>
-    <div class="why-img">
-      <img src="assets/service-hair.jpg" alt="Hair restoration consultation at JENCA" onerror="this.src='https://images.unsplash.com/photo-1580618672591-eb180b1a973f?q=80&w=800&auto=format&fit=crop'">
+    <div class="tx-grid">
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Hair PRP Restore&trade;</h3>
+        <p class="tx-tag">Platelet-Rich Plasma (PRP) Hair Restoration</p>
+        <p class="tx-desc">A regenerative treatment using your body&rsquo;s own platelet-rich plasma to stimulate dormant hair follicles and promote healthier, thicker hair growth.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Early hair thinning</li><li>Male and female pattern hair loss</li><li>Postpartum hair loss</li><li>Hair strengthening</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;5,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Hair PRF Elite&trade;</h3>
+        <p class="tx-tag">Platelet-Rich Fibrin Hair Therapy</p>
+        <p class="tx-desc">An advanced regenerative treatment that delivers a sustained release of growth factors to support healthier hair growth and scalp regeneration.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Moderate hair thinning</li><li>Hair density improvement</li><li>Scalp rejuvenation</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;8,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Hair Exosome Elite&trade;</h3>
+        <p class="tx-tag">Exosome Hair Regeneration</p>
+        <p class="tx-desc">A next-generation regenerative therapy that helps stimulate hair follicles, improve scalp health, and encourage stronger, thicker hair growth.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Moderate to advanced hair loss</li><li>Slow-growing hair</li><li>Hair restoration after shedding</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;14,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Hair LuxeFusion&trade;</h3>
+        <p class="tx-tag">PRP + Exosome Hair Restoration</p>
+        <p class="tx-desc">A premium regenerative protocol combining PRP and exosome therapy to maximize hair follicle stimulation and support long-term hair restoration.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Progressive hair loss</li><li>Thinning hair</li><li>Advanced regenerative therapy</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price">&#8369;19,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Hair Growth Mesotherapy&trade;</h3>
+        <p class="tx-tag">Hair Nutrient Infusion</p>
+        <p class="tx-desc">A scalp treatment that delivers vitamins, amino acids, peptides, and essential nutrients directly into the scalp to nourish hair follicles.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Weak hair</li><li>Hair thinning</li><li>Poor scalp nutrition</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;4,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Hair Booster&trade;</h3>
+        <p class="tx-tag">Scalp Rejuvenation Therapy</p>
+        <p class="tx-desc">A customized hair booster treatment designed to improve scalp circulation, strengthen existing hair, and promote healthier hair growth.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Early-stage hair loss</li><li>Dry scalp</li><li>Weak hair strands</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;6,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Hair Growth Laser&trade;</h3>
+        <p class="tx-tag">Low-Level Laser Therapy (LLLT)</p>
+        <p class="tx-desc">A non-invasive laser treatment that helps stimulate hair follicles and improve scalp circulation to support healthy hair growth.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Hair thinning</li><li>Hair maintenance</li><li>Supporting regenerative treatments</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;2,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Hair Restore Program&trade;</h3>
+        <p class="tx-tag">Personalized Hair Restoration Plan</p>
+        <p class="tx-desc">A customized treatment program that combines regenerative therapies, scalp treatments, and home care recommendations based on your hair loss pattern and goals.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Male pattern hair loss</li><li>Female pattern hair loss</li><li>Diffuse thinning</li><li>Long-term hair maintenance</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Treatment plan</small>Customized</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+    </div>
+    <div class="consult-note">
+      <h3>Professional Hair &amp; Scalp Assessment</h3>
+      <p>Every hair restoration journey begins with a comprehensive scalp and hair evaluation. Our medical professionals assess your hair loss pattern, scalp condition, medical history, and treatment goals to create a personalized restoration plan.</p>
+      <span class="fee">Consultation Fee: &#8369;500 &mdash; waived when you proceed with treatment.</span>
     </div>
   </div>
 </section>
 
-<section id="dental" class="services">
-  <div class="wrap why-grid">
-    <div class="why-img">
-      <img src="assets/service-dental.jpg" alt="Dental care at JENCA" onerror="this.src='https://images.unsplash.com/photo-1606811841689-23dfddce3e95?q=80&w=800&auto=format&fit=crop'">
+<section id="intimate" class="menu-section">
+  <div class="wrap">
+    <div class="menu-head">
+      <p class="eyebrow">06 &mdash; Intimate Rejuvenation</p>
+      <h2>Intimate Rejuvenation</h2>
+      <p>Confidential, physician-performed regenerative treatments that support intimate tissue health and wellness for women and men.</p>
     </div>
-    <div>
-      <p class="eyebrow">04 — Dental Care</p>
+    <h3 class="tx-sub">Women&rsquo;s Intimate Rejuvenation</h3>
+    <div class="tx-grid">
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Feminine Restore&trade;</h3>
+        <p class="tx-tag">Vaginal Rejuvenation</p>
+        <p class="tx-desc">Supports improved vaginal tissue quality, hydration, and intimate wellness through regenerative medicine.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Vaginal dryness</li><li>Mild laxity</li><li>Postpartum changes</li><li>Menopause-related concerns</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;25,000 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Pink Pearl&trade;</h3>
+        <p class="tx-tag">Intimate Brightening</p>
+        <p class="tx-desc">Professional brightening treatment for the external intimate area.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Uneven intimate skin tone</li><li>Intimate skin care</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;3,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA O-Shot Regenerate&trade;</h3>
+        <p class="tx-tag">Female Sexual Wellness</p>
+        <p class="tx-desc">A PRP-based regenerative treatment designed to support intimate wellness and tissue health.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Intimate wellness</li><li>Tissue health</li><li>Postpartum recovery support</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;25,000 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+    </div>
+    <h3 class="tx-sub">Men&rsquo;s Intimate Rejuvenation</h3>
+    <div class="tx-grid">
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA P-Shot Regenerate&trade;</h3>
+        <p class="tx-tag">Male Sexual Wellness</p>
+        <p class="tx-desc">A PRP-based regenerative treatment intended to support penile tissue health and function.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Intimate wellness</li><li>Tissue health</li><li>Male sexual wellness</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;25,000 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Men&rsquo;s Vital Restore&trade;</h3>
+        <p class="tx-tag">Penile Rejuvenation</p>
+        <p class="tx-desc">A regenerative treatment focused on improving tissue quality and overall intimate wellness.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Tissue quality</li><li>Intimate wellness</li><li>Regenerative support</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;25,000 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">JENCA Intimate Bright&trade; for Men</h3>
+        <p class="tx-tag">Intimate Area Brightening</p>
+        <p class="tx-desc">Professional brightening treatment for the male intimate area.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Uneven intimate skin tone</li><li>Intimate skin care</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>Starting at</small>&#8369;3,500 / session</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+    </div>
+    <div class="consult-note">
+      <h3>Private &amp; Confidential Consultation</h3>
+      <p>All intimate rejuvenation treatments are performed by licensed medical professionals in a private, discreet setting. A confidential medical consultation and assessment is required before any procedure.</p>
+    </div>
+  </div>
+</section>
+
+<section id="dental" class="menu-section">
+  <div class="wrap">
+    <div class="menu-head">
+      <p class="eyebrow">07 &mdash; Dental Care</p>
       <h2>Dental Care</h2>
       <p>Comprehensive dentistry for a healthier, more confident smile.</p>
-      <div class="why-list">
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>Dental Consultation</h3></div></div>
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>Orthodontics &amp; Braces</h3></div></div>
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>Teeth Whitening</h3></div></div>
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>Preventive &amp; Restorative Dentistry</h3></div></div>
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>Smile Enhancement</h3></div></div>
-      </div>
-      <a href="book.html" class="btn btn-outline" style="margin-top:24px;">Book This Service</a>
+    </div>
+    <div class="tx-grid">
+      <article class="tx-card">
+        <h3 class="tx-name">Dental Consultation</h3>
+        <p class="tx-tag">Assessment &amp; Treatment Planning</p>
+        <p class="tx-desc">A complete oral examination to assess your dental health and plan the right treatment for you.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>First-time patients</li><li>Routine check-up</li><li>Treatment planning</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>For pricing</small>Inquire</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">Orthodontics &amp; Braces</h3>
+        <p class="tx-tag">Alignment &amp; Bite Correction</p>
+        <p class="tx-desc">Braces and alignment options to correct crowding, spacing, and bite concerns.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Crooked teeth</li><li>Crowding</li><li>Bite correction</li><li>Teens and adults</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>For pricing</small>Inquire</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">Teeth Whitening</h3>
+        <p class="tx-tag">Brighter Smile</p>
+        <p class="tx-desc">Professional whitening for a noticeably brighter, cleaner-looking smile.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Stained teeth</li><li>Special occasions</li><li>Smile refresh</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>For pricing</small>Inquire</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">Preventive &amp; Restorative Dentistry</h3>
+        <p class="tx-tag">Cleaning &bull; Fillings &bull; Repair</p>
+        <p class="tx-desc">Cleaning, fillings, and restorative procedures that protect and rebuild your natural teeth.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Cavities</li><li>Tartar build-up</li><li>Damaged teeth</li><li>Routine maintenance</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>For pricing</small>Inquire</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">Smile Enhancement</h3>
+        <p class="tx-tag">Cosmetic Dentistry</p>
+        <p class="tx-desc">Cosmetic dental procedures designed to improve the shape, colour, and harmony of your smile.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Smile makeover</li><li>Chipped teeth</li><li>Aesthetic concerns</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>For pricing</small>Inquire</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
     </div>
   </div>
 </section>
 
-<section id="wellness" class="why">
-  <div class="wrap why-grid">
-    <div>
-      <p class="eyebrow">05 — Body &amp; Wellness</p>
+<section id="wellness" class="menu-section">
+  <div class="wrap">
+    <div class="menu-head">
+      <p class="eyebrow">08 &mdash; Body &amp; Wellness</p>
       <h2>Body &amp; Wellness</h2>
-      <p>Whole-body programs that support long-term health and confidence.</p>
-      <div class="why-list">
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>Body Contouring</h3></div></div>
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>Weight-Management Support</h3></div></div>
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>IV Wellness Programs</h3></div></div>
-        <div class="why-item"><span class="petal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/></svg></span><div><h3>Personalized Wellness Care</h3></div></div>
-      </div>
-      <a href="book.html" class="btn btn-outline" style="margin-top:24px;">Book This Service</a>
+      <p>Whole-body programs that support long-term health, energy, and confidence.</p>
     </div>
-    <div class="why-img">
-      <img src="assets/service-wellness.jpg" alt="Wellness program at JENCA" onerror="this.src='https://images.unsplash.com/photo-1600334129128-685c5582fd35?q=80&w=800&auto=format&fit=crop'">
+    <div class="tx-grid">
+      <article class="tx-card">
+        <h3 class="tx-name">Body Contouring</h3>
+        <p class="tx-tag">Shape &amp; Definition</p>
+        <p class="tx-desc">Non-surgical body contouring treatments that target stubborn areas and support smoother contours.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Abdomen</li><li>Arms</li><li>Thighs</li><li>Flanks</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>For pricing</small>Inquire</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">Weight-Management Support</h3>
+        <p class="tx-tag">Medically Guided Programs</p>
+        <p class="tx-desc">Physician-guided weight management support tailored to your health profile and goals.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Weight loss support</li><li>Lifestyle change</li><li>Long-term maintenance</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>For pricing</small>Inquire</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">IV Wellness Programs</h3>
+        <p class="tx-tag">Hydration &bull; Immunity &bull; Energy</p>
+        <p class="tx-desc">Intravenous wellness drips formulated to support hydration, immunity, energy, and skin health.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Fatigue</li><li>Immunity support</li><li>Skin glow</li><li>Post-illness recovery</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>For pricing</small>Inquire</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
+      <article class="tx-card">
+        <h3 class="tx-name">Personalized Wellness Care</h3>
+        <p class="tx-tag">Customized Programs</p>
+        <p class="tx-desc">A wellness plan built around your health assessment, lifestyle, and personal goals.</p>
+        <p class="tx-best-label">Best for</p>
+        <ul class="tx-best"><li>Preventive health</li><li>Overall wellness</li><li>Long-term planning</li></ul>
+        <div class="tx-foot">
+          <span class="tx-price"><small>For pricing</small>Inquire</span>
+          <a href="book.html" class="tx-book">Book</a>
+        </div>
+      </article>
     </div>
   </div>
 </section>
+
+
+<section style="padding:0 0 80px;">
+  <div class="wrap">
+    <div class="price-disclaimer">
+      <strong>Please note:</strong> All prices are in Philippine Peso (&#8369;) and are indicative starting rates.
+      Final pricing depends on the treatment area, number of sessions, and products used, and will be confirmed
+      during your medical consultation. Prices are subject to change without prior notice. All procedures are
+      performed by licensed medical professionals following a proper assessment. Results vary per individual.
+    </div>
+  </div>
+</section>
+
 
 <!-- ===== CTA BAND ===== -->
 <section class="cta-band">
@@ -194,7 +1112,8 @@
       </svg>
   <div class="wrap">
     <p class="eyebrow">Begin Your JENCA Journey</p>
-    <h2>Not sure which service is right for you?</h2>
+    <h2>Not sure which treatment is right for you?</h2>
+    <p>Book a consultation and our medical team will build a personalized treatment plan around your goals.</p>
     <a href="book.html" class="btn btn-primary">Book a Consultation</a>
   </div>
 </section>
@@ -244,7 +1163,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 JENCA Medical &amp; Dental Aesthetic Clinic. All Rights Reserved.</span>
+      <span>&copy; 2026 JENCA Medical &amp; Dental Aesthetic Clinic. All Rights Reserved.</span>
       <p class="dev-credit">
         <a href="https://serelldc.github.io/" target="_blank" rel="noopener">
           <img src="assets/srdc-logo.png" alt="SRDC - Strategic Resource Digital Creators logo">
@@ -257,13 +1176,12 @@
 
 <a href="book.html" class="float-book">Book Now</a>
 
-
 <div class="app-modal-overlay" id="appModalOverlay">
   <div class="app-modal">
-    <button class="app-modal-close" id="appModalClose" aria-label="Close">✕</button>
+    <button class="app-modal-close" id="appModalClose" aria-label="Close">&#10005;</button>
     <div class="app-modal-icon"><img src="assets/icon-512.png" alt="JENCA app icon"></div>
     <h3>Get the JENCA App</h3>
-    <p>Install the JENCA app on your phone for faster booking — one tap, no App Store required.</p>
+    <p>Install the JENCA app on your phone for faster booking &mdash; one tap, no App Store required.</p>
     <button id="downloadAppBtn" class="btn btn-primary">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v13m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
       Download the App
@@ -271,7 +1189,7 @@
     <div class="ios-instructions" id="iosInstructions">
       <strong>On iPhone:</strong> open in Safari, tap the Share icon, then select "Add to Home Screen".
     </div>
-    <p class="already-installed-note" id="alreadyInstalledNote">✓ The JENCA app is already installed on your device.</p>
+    <p class="already-installed-note" id="alreadyInstalledNote">&#10003; The JENCA app is already installed on your device.</p>
     <div class="app-modal-features">
       <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="15" height="15"><path d="M13 2 L4 14h6l-1 8 9-12h-6l1-8Z"/></svg>Fast</span>
       <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="15" height="15"><path d="M2 12a10 10 0 0 1 20 0"/><path d="M6 12a6 6 0 0 1 12 0"/><circle cx="12" cy="16" r="1.5"/></svg>Offline</span>
@@ -281,5 +1199,43 @@
 </div>
 
 <script src="js/main.js"></script>
+<script>
+/* ===== Treatment menu category filter ===== */
+(function(){
+  var pills    = Array.prototype.slice.call(document.querySelectorAll('.filter-pill'));
+  var sections = Array.prototype.slice.call(document.querySelectorAll('.menu-section'));
+  if(!pills.length) return;
+
+  function apply(cat, scroll){
+    pills.forEach(function(p){ p.classList.toggle('active', p.dataset.cat === cat); });
+    sections.forEach(function(s){
+      s.classList.toggle('is-hidden', !(cat === 'all' || s.id === cat));
+    });
+    if(scroll){
+      var top = document.querySelector('.menu-filter');
+      if(top){
+        var y = top.getBoundingClientRect().top + window.pageYOffset - 84;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    }
+  }
+
+  pills.forEach(function(p){
+    p.addEventListener('click', function(){
+      apply(p.dataset.cat, true);
+      history.replaceState(null, '', p.dataset.cat === 'all' ? location.pathname : '#' + p.dataset.cat);
+    });
+  });
+
+  var hash = location.hash.replace('#','');
+  if(hash && sections.some(function(s){ return s.id === hash; })){
+    apply(hash, false);
+    setTimeout(function(){
+      var el = document.getElementById(hash);
+      if(el) window.scrollTo({ top: el.offsetTop - 130, behavior: 'smooth' });
+    }, 120);
+  }
+})();
+</script>
 </body>
 </html>
