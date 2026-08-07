@@ -51,25 +51,11 @@
   padding:14px 0;
 }
 @media(max-width:900px){ .menu-filter{backdrop-filter:none;background:var(--white);} }
-.menu-filter .wrap{padding:0 24px; position:relative;}
+.menu-filter .wrap{padding:0 24px;}
 .filter-scroll{
-  display:flex; gap:10px; overflow-x:auto;
-  scrollbar-width:none; -ms-overflow-style:none;
-  padding-bottom:2px; padding-right:4px;
-  -webkit-overflow-scrolling:touch;
-  scroll-snap-type:x proximity;
+  display:flex; flex-wrap:wrap; gap:10px;
 }
-.filter-scroll::-webkit-scrollbar{display:none;}
-.menu-filter .wrap::before,
-.menu-filter .wrap::after{
-  content:''; position:absolute; top:0; bottom:0; width:28px;
-  pointer-events:none; z-index:1; transition:opacity .2s ease;
-}
-.menu-filter .wrap::after{ right:0; background:linear-gradient(90deg,transparent,var(--white) 75%); }
-.menu-filter .wrap::before{ left:0; background:linear-gradient(270deg,transparent,var(--white) 75%); opacity:0; }
-.menu-filter .wrap.is-scrolled::before{ opacity:1; }
-.menu-filter .wrap.at-end::after{ opacity:0; }
-.filter-pill{scroll-snap-align:start;
+.filter-pill{
   flex:none;
   font-family:var(--font-body);
   font-size:.82rem; font-weight:600; letter-spacing:.01em;
@@ -80,18 +66,8 @@
 }
 .filter-pill:hover{border-color:var(--teal); color:var(--teal-deep);}
 .filter-pill.active{background:var(--teal-deep); border-color:var(--teal-deep); color:var(--white);}
-
-/* On narrow screens, wrap pills onto multiple lines instead of
-   horizontal-scrolling — nothing gets visually clipped at the edge. */
 @media(max-width:700px){
-  .filter-scroll{
-    flex-wrap:wrap; overflow-x:visible;
-    padding-right:0; scroll-snap-type:none;
-  }
   .filter-pill{font-size:.78rem; padding:8px 14px;}
-  .menu-filter .wrap::before,
-  .menu-filter .wrap::after{ display:none; }
-  .menu-filter{position:static;}
 }
 
 .menu-section{padding:80px 0;}
@@ -1228,21 +1204,7 @@
 (function(){
   var pills    = Array.prototype.slice.call(document.querySelectorAll('.filter-pill'));
   var sections = Array.prototype.slice.call(document.querySelectorAll('.menu-section'));
-  var scroller = document.querySelector('.filter-scroll');
-  var wrap     = document.querySelector('.menu-filter .wrap');
   if(!pills.length) return;
-
-  function updateFades(){
-    if(!scroller || !wrap) return;
-    var max = scroller.scrollWidth - scroller.clientWidth;
-    wrap.classList.toggle('is-scrolled', scroller.scrollLeft > 4);
-    wrap.classList.toggle('at-end', scroller.scrollLeft >= max - 4);
-  }
-  if(scroller){
-    scroller.addEventListener('scroll', updateFades, { passive: true });
-    window.addEventListener('resize', updateFades);
-    updateFades();
-  }
 
   function apply(cat, scroll){
     pills.forEach(function(p){ p.classList.toggle('active', p.dataset.cat === cat); });
