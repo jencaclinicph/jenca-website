@@ -521,7 +521,7 @@
 
 <div class="topbar">
   <div class="brand">
-    <img class="brand-logo" src="logo.png" alt="JENCA logo" />
+    <img class="brand-logo" src="assets/jenca-logo.jpg" alt="JENCA logo" />
     <div class="brand-text">
       <span class="eyebrow">JENCA Medical &amp; Dental Aesthetic Clinic</span>
       <h1>Staff Monitor</h1>
@@ -611,6 +611,9 @@
 
     <span class="settings-label" id="walkInServiceLabel">Service</span>
     <select id="walkInService" class="modal-select"></select>
+
+    <span class="settings-label" id="walkInAmountLabel">Amount</span>
+    <input type="number" id="walkInAmount" min="0" step="0.01" placeholder="0.00" />
 
     <span class="settings-label" id="walkInTimeLabel">Time</span>
     <input type="time" id="walkInTime" />
@@ -846,6 +849,7 @@ const STRINGS = {
     walkInDesc: 'Book a walk-in patient. This is automatically checked against existing bookings so nothing double-books.',
     walkInBranchLabel: 'Branch',
     walkInServiceLabel: 'Service',
+    walkInAmountLabel: 'Amount',
     walkInTimeLabel: 'Time',
     walkInNameLabel: 'Patient Name',
     walkInContactLabel: 'Contact Number',
@@ -937,6 +941,7 @@ const STRINGS = {
     walkInDesc: 'I-book ang walk-in patient. Awtomatiko itong ise-check kung may conflict sa existing bookings.',
     walkInBranchLabel: 'Branch',
     walkInServiceLabel: 'Service',
+    walkInAmountLabel: 'Halaga',
     walkInTimeLabel: 'Oras',
     walkInNameLabel: 'Pangalan ng Patient',
     walkInContactLabel: 'Contact Number',
@@ -1067,6 +1072,7 @@ function applyLanguage(){
   document.getElementById('walkInDesc').textContent = t('walkInDesc');
   document.getElementById('walkInBranchLabel').textContent = t('walkInBranchLabel');
   document.getElementById('walkInServiceLabel').textContent = t('walkInServiceLabel');
+  document.getElementById('walkInAmountLabel').textContent = t('walkInAmountLabel');
   document.getElementById('walkInTimeLabel').textContent = t('walkInTimeLabel');
   document.getElementById('walkInNameLabel').textContent = t('walkInNameLabel');
   document.getElementById('walkInContactLabel').textContent = t('walkInContactLabel');
@@ -1467,72 +1473,33 @@ function populateWalkInForm(){
   branchSel.innerHTML = BRANCH_ORDER.map(b => `<option value="${b}">${b}</option>`).join('');
 
   const serviceSel = document.getElementById('walkInService');
-  const FALLBACK_SERVICE_GROUPS = [
-    { group:"Facial Aesthetics", items:[
-      ["JENCA AquaGlow™ Facial","₱1,500"],["JENCA Carbon Clear™","₱1,500"],
-      ["JENCA Acne Clear Reset™","₱1,999"],["JENCA Crystal Polish™","₱999"],
-      ["JENCA Signature Glow™ Facial","₱999"],["JENCA Deep Purify™ Facial","₱1,299"],
-      ["JENCA Glass Radiance™ Facial","₱2,500"],["JENCA Skin Renew Peel™","From ₱2,500"],
-      ["JENCA Skin Revive™ Laser","₱2,500"],["JENCA LED Recovery™","₱800"],
-      ["JENCA Oxygen Infusion™","₱2,500"],["JENCA Luxe Glow™ Facial","From ₱3,500"]
-    ]},
-    { group:"Face Lifting & Contouring", items:[
-      ["JENCA UltraLift MPT™","From ₱18,000"],["JENCA ExiLift RF™","₱3,500"],
-      ["JENCA V-Lift Contour™","From ₱35,000"],["JENCA Fox Eye Lift™","From ₱2,999/thread"],
-      ["JENCA Jawline Sculpt™","From ₱18,000"],["JENCA Chin Define™","From ₱18,000"],
-      ["JENCA HIKO Nose Define™","From ₱14,999"],["JENCA NeckLift Renew™","From ₱8,000"],
-      ["JENCA Double Chin Sculpt™","From ₱6,500"],["JENCA Full Face Rejuvenation™","Custom Plan"]
-    ]},
-    { group:"Injectables", items:[
-      ["JENCA Wrinkle Relax™","From ₱250/unit"],["JENCA Dermal Contour™","From ₱18,000/syringe"],
-      ["JENCA LipLuxe™","From ₱18,000"],["JENCA UnderEye Restore™","From ₱18,000"],
-      ["JENCA Liquid Lift™","Custom Plan"],["JENCA Lemon Sculpt™","₱6,500"],
-      ["JENCA Aqualyx Sculpt™","From ₱18,000/vial"],["JENCA LipoContour™","From ₱3,500"],
-      ["JENCA SweatFree™","From ₱9,999"],["JENCA V-Shape™","From ₱12,000"],
-      ["JENCA Barbie Shoulder™","From ₱18,000"],["JENCA Calf Contour™","From ₱18,000"]
-    ]},
-    { group:"Regenerative Medicine", items:[
-      ["JENCA PRP Skin Renewal™","From ₱5,500"],["JENCA PRP LuxeFusion™","₱8,500"],
-      ["JENCA PRF Elite™","From ₱8,500"],["JENCA Exosome Regenerate™","₱14,500"],
-      ["JENCA Rejuran Restore™","₱25,000"],["JENCA Plinest Collagen Restore™","From ₱18,000"],
-      ["JENCA Juvelook Renew™","From ₱28,000"],["JENCA Skin Boost Infusion™","From ₱8,500"]
-    ]},
-    { group:"Hair Restoration", items:[
-      ["JENCA Hair PRP Restore™","₱5,500"],["JENCA Hair PRF Elite™","From ₱8,500"],
-      ["JENCA Hair Exosome Elite™","₱14,500"],["JENCA Hair LuxeFusion™","₱19,500"],
-      ["JENCA Hair Growth Mesotherapy™","From ₱4,500"],["JENCA Hair Booster™","From ₱6,500"],
-      ["JENCA Hair Growth Laser™","From ₱2,500"],["JENCA Hair Restore Program™","Custom Plan"]
-    ]},
-    { group:"Intimate Rejuvenation", items:[
-      ["JENCA Feminine Restore™","From ₱25,000"],["JENCA Pink Pearl™","From ₱3,500"],
-      ["JENCA O-Shot Regenerate™","From ₱25,000"],["JENCA P-Shot Regenerate™","From ₱25,000"],
-      ["JENCA Men's Vital Restore™","From ₱25,000"],["JENCA Intimate Bright™ for Men","From ₱3,500"]
-    ]},
-    { group:"Dental Care", items:[
-      ["Dental Consultation","Inquire"],["Orthodontics & Braces","Inquire"],
-      ["Teeth Whitening","Inquire"],["Preventive & Restorative Dentistry","Inquire"],
-      ["Smile Enhancement","Inquire"]
-    ]},
-    { group:"Body & Wellness", items:[
-      ["Body Contouring","Inquire"],["Weight-Management Support","Inquire"],
-      ["IV Wellness Programs","Inquire"],["Personalized Wellness Care","Inquire"]
-    ]}
-  ];
-  if (latestData.services && Object.keys(latestData.services).length){
-    const services = Object.keys(latestData.services);
-    serviceSel.innerHTML = services.map(s => `<option value="${s}">${s}</option>`).join('');
-  } else {
-    serviceSel.innerHTML = FALLBACK_SERVICE_GROUPS.map(g =>
-      `<optgroup label="${escapeHtml(g.group)}">` +
-      g.items.map(([name, price]) => `<option value="${escapeHtml(name)}">${escapeHtml(name)} — ${escapeHtml(price)}</option>`).join('') +
-      `</optgroup>`
-    ).join('');
-  }
+  const services = (latestData.services && Object.keys(latestData.services).length)
+    ? Object.keys(latestData.services).sort((a,b)=>a.localeCompare(b))
+    : ["Regenerative Care","Medical Aesthetics","Hair Restoration","Dental Care","Body and Wellness","IV Wellness","General Consultation"].sort((a,b)=>a.localeCompare(b));
+  serviceSel.innerHTML = services.map(s => `<option value="${s}">${s}</option>`).join('');
+  serviceSel.onchange = updateWalkInAmount;
+
   const now = new Date();
   const manilaNow = new Date(now.toLocaleString('en-US', { timeZone:'Asia/Manila' }));
   const hh = String(manilaNow.getHours()).padStart(2,'0');
   const mm = String(manilaNow.getMinutes()).padStart(2,'0');
   document.getElementById('walkInTime').value = `${hh}:${mm}`;
+
+  updateWalkInAmount();
+}
+
+// Auto-fill the walk-in Amount field from the selected service's price on
+// services.html (latestData.prices, sent by the backend). Staff can still
+// edit the amount afterward (e.g. to add extra charges on top).
+function updateWalkInAmount(){
+  const service = document.getElementById('walkInService').value;
+  const price = latestData.prices ? latestData.prices[service] : null;
+  const amountInput = document.getElementById('walkInAmount');
+  if (price !== null && price !== undefined){
+    amountInput.value = price;
+  } else {
+    amountInput.value = '';
+  }
 }
 
 function todayManilaDateStr(){
@@ -1553,6 +1520,7 @@ async function submitWalkIn(){
   const contact = document.getElementById('walkInContact').value.trim();
   const patientType = document.getElementById('walkInPatientType').value;
   const pin = document.getElementById('walkInPin').value.trim();
+  const amount = document.getElementById('walkInAmount').value.trim();
 
   if (!name || !contact || !time || !pin){
     msgEl.textContent = t('fillRequired');
@@ -1568,7 +1536,7 @@ async function submitWalkIn(){
       type: 'walkIn',
       branch, service, time,
       date: todayManilaDateStr(),
-      name, contact, patientType, pin
+      name, contact, patientType, pin, amount
     });
     if (json.success){
       msgEl.textContent = json.message || t('updated');
@@ -1682,6 +1650,16 @@ async function openAddPaymentModal(branch, eventId){
   document.getElementById('paymentTotal').placeholder = total ? total.toFixed(2) : '0.00';
   document.getElementById('currentStateAmt').textContent =
     `₱${paid.toFixed(2)} paid of ₱${total.toFixed(2)}`;
+
+  // Auto-fill Total from the service's price on services.html when no
+  // Total has been set on this booking yet. Staff can still edit/add on top.
+  if (!total){
+    const svcPrice = latestData.prices ? latestData.prices[details['Service']] : null;
+    if (svcPrice !== null && svcPrice !== undefined){
+      document.getElementById('paymentTotal').value = svcPrice;
+    }
+  }
+
   updateBalanceDisplay();
 }
 
