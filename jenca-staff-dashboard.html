@@ -1474,8 +1474,8 @@ function populateWalkInForm(){
 
   const serviceSel = document.getElementById('walkInService');
   const services = (latestData.services && Object.keys(latestData.services).length)
-    ? Object.keys(latestData.services)
-    : ["Regenerative Care","Medical Aesthetics","Hair Restoration","Dental Care","Body and Wellness","IV Wellness","General Consultation"];
+    ? Object.keys(latestData.services).sort((a,b)=>a.localeCompare(b))
+    : ["Regenerative Care","Medical Aesthetics","Hair Restoration","Dental Care","Body and Wellness","IV Wellness","General Consultation"].sort((a,b)=>a.localeCompare(b));
   serviceSel.innerHTML = services.map(s => `<option value="${s}">${s}</option>`).join('');
   serviceSel.onchange = updateWalkInAmount;
 
